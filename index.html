@@ -960,6 +960,13 @@
                         <small style="color:#2ca5e0; font-size:10px; display:block; margin-top:4px;">⚡ هذا الرابط يظهر للمناديب فقط في تطبيقهم ضمن قسم "حسابي الشخصي"</small>
                     </div>
                     <!-- ===== نهاية حقل تيليجرام ===== -->
+                    <!-- ===== حقل قناة واتساب المناديب ===== -->
+                    <div class="form-group" style="background:rgba(37,211,102,0.07); border:1px solid rgba(37,211,102,0.3); border-radius:10px; padding:12px; margin-top:8px;">
+                        <label style="color:#25d366; font-weight:bold;"><i class="fab fa-whatsapp" style="color:#25d366;"></i> رابط قناة/مجموعة واتساب المناديب</label>
+                        <input type="text" id="driver-whatsapp-channel" placeholder="مثلاً https://chat.whatsapp.com/XXXXXXXXXXXXXXXXXXXXXXXX" style="border-color:#25d366;">
+                        <small style="color:#25d366; font-size:10px; display:block; margin-top:4px;">⚡ يظهر للمناديب في تطبيقهم تلقائياً فور الحفظ</small>
+                    </div>
+                    <!-- ===== نهاية حقل قناة واتساب ===== -->
                     <button class="btn btn-gold" style="width:100%;" onclick="saveContactSettings()"><i class="fas fa-save"></i> حفظ إعدادات التواصل وإرسالها للعملاء فوراً</button>
                     <div id="contact-save-status" style="margin-top:10px; font-size:12px; text-align:center; display:none;"></div>
                 </div>
@@ -1485,7 +1492,7 @@
             <h3 style="color:var(--gold);"><i class="fas fa-wallet"></i> إدارة رصيد المندوب</h3>
             <div id="driver-balance-info" style="margin-bottom:15px;"></div>
             <div class="form-group">
-                <label>مبلغ الشحن (ل.س)</label>
+                <label>المبلغ (ل.س)</label>
                 <input type="number" id="modal-charge-amount" placeholder="مثلاً 200000" style="font-size:18px; text-align:center;">
             </div>
             <div class="form-group">
@@ -1494,8 +1501,11 @@
             </div>
             <div style="display:flex; gap:10px; margin-top:15px;">
                 <button class="btn btn-gold" style="flex:1; background:#2ecc71; color:#fff;" onclick="executeDriverBalanceCharge()"><i class="fas fa-plus"></i> شحن الرصيد</button>
-                <button class="btn btn-danger" style="flex:1;" onclick="closeModal('driver-balance-modal')">إغلاق</button>
+                <!-- [DEDUCT-BTN] زر الخصم من المحفظة -->
+                <button class="btn btn-danger" style="flex:1; background:rgba(231,76,60,0.15); border:1px solid var(--danger); color:var(--danger);" onclick="executeDriverBalanceDeduct()"><i class="fas fa-minus"></i> خصم من الرصيد</button>
+                <!-- [END-DEDUCT-BTN] -->
             </div>
+            <button class="btn btn-danger" style="width:100%; margin-top:8px; background:transparent; border:1px solid #555; color:#888; font-size:12px;" onclick="closeModal('driver-balance-modal')">إغلاق</button>
             <!-- زر تصفير المندوب -->
             <div style="margin-top:14px; padding-top:14px; border-top:1px solid rgba(255,255,255,0.08);">
                 <button class="btn btn-danger" style="width:100%; background:rgba(231,76,60,0.12); border:1px solid var(--danger); font-size:12px;" onclick="confirmResetDriver()">
@@ -3831,6 +3841,52 @@
             loadSettlementData();
         }
 
+        // ===== [DEDUCT-FUNC] دالة خصم من محفظة المندوب =====
+        async function executeDriverBalanceDeduct() {
+            const amount = parseFloat(document.getElementById('modal-charge-amount').value);
+            const note = document.getElementById('modal-charge-note').value || 'خصم من الإدارة';
+            if (!_selectedChargeDriverId || isNaN(amount) || amount <= 0) return showNotify('يرجى إدخال مبلغ صحيح للخصم');
+
+            const { data: driverData } = await _client.from('drivers').select('wallet_balance, name').eq('id', _selectedChargeDriverId).single();
+            const currentBal = parseFloat(driverData?.wallet_balance) || 0;
+
+            if (amount > currentBal) {
+                const confirmDeduct = confirm(`⚠️ المبلغ المطلوب خصمه (${amount.toLocaleString()} ل.س) أكبر من الرصيد الحالي (${currentBal.toLocaleString()} ل.س). هل تريد المتابعة وجعل الرصيد سالباً؟`);
+                if (!confirmDeduct) return;
+            }
+
+            const newBal = currentBal - amount;
+
+            await _client.from('drivers').update({
+                wallet_balance: newBal
+            }).eq('id', _selectedChargeDriverId);
+
+            await _client.from('driver_charge_logs').insert([{
+                driver_id: _selectedChargeDriverId,
+                driver_name: driverData?.name || _selectedChargeDriverName,
+                amount: amount,
+                type: 'deduct',
+                charged_by: currentStaff,
+                note: note,
+                balance_before: currentBal,
+                balance_after: newBal,
+                created_at: new Date().toISOString()
+            }]);
+
+            await _client.from('notifications').insert([{
+                user_id: _selectedChargeDriverId,
+                message: `⚠️ تم خصم مبلغ ${amount.toLocaleString()} ل.س من رصيدك. رصيدك الحالي: ${newBal.toLocaleString()} ل.س. السبب: ${note}`,
+                type: 'balance_deduct',
+                created_at: new Date().toISOString()
+            }]);
+
+            await addSystemLog(`خصم من رصيد المندوب ${_selectedChargeDriverName} بمبلغ ${amount.toLocaleString()} ل.س. الرصيد الجديد: ${newBal.toLocaleString()} ل.س`);
+            showNotify(`تم خصم ${amount.toLocaleString()} ل.س من رصيد ${_selectedChargeDriverName} ✅`);
+            closeModal('driver-balance-modal');
+            loadSettlementData();
+        }
+        // ===== [END-DEDUCT-FUNC] نهاية دالة الخصم =====
+
         // ===== تصفير جميع أرقام المندوب =====
         function confirmResetDriver() {
             if(!_selectedChargeDriverId) return;
@@ -4562,9 +4618,10 @@
             const listDiv = document.getElementById('shift-drivers-list');
             if (!listDiv) return;
             listDiv.innerHTML = '<p style="text-align:center; opacity:0.5; font-size:12px;">جاري التحميل...</p>';
-            const { data: drivers, error } = await _client.from('drivers').select('id, name, status, driver_type, shift_start, shift_end, lat, lng').order('name');
+            // [FIX-SHIFT-1] إزالة lat/lng من الاستعلام — هذان الحقلان في sh_admin_tracking وليس في drivers
+            const { data: drivers, error } = await _client.from('drivers').select('id, name, status, driver_type, shift_start, shift_end').order('name');
             if (error || !drivers) {
-                listDiv.innerHTML = '<p style="color:#e74c3c; font-size:12px; text-align:center;">خطأ في تحميل البيانات</p>';
+                listDiv.innerHTML = '<p style="color:#e74c3c; font-size:12px; text-align:center;">خطأ في تحميل البيانات: ' + (error?.message || 'تحقق من صلاحيات قاعدة البيانات') + '</p>';
                 return;
             }
             allShiftDrivers = drivers;
@@ -4632,13 +4689,22 @@
             const filterVal = document.getElementById('shift-log-filter')?.value || '30';
             const logsContainer = document.getElementById('shift-logs-container');
             logsContainer.innerHTML = '<p style="text-align:center; opacity:0.5; font-size:12px;">جاري التحميل...</p>';
-            let query = _client.from('attendance_logs').select('*').eq('driver_id', selectedShiftDriverId).order('checkin_time', { ascending: false });
-            if (filterVal !== 'all') {
-                const cutoff = new Date();
-                cutoff.setDate(cutoff.getDate() - parseInt(filterVal));
-                query = query.gte('checkin_time', cutoff.toISOString());
+            // [FIX-SHIFT-3] try/catch شامل لمنع التعليق عند غياب أعمدة في attendance_logs
+            let logs = null;
+            try {
+                let query = _client.from('attendance_logs').select('*').eq('driver_id', selectedShiftDriverId).order('checkin_time', { ascending: false });
+                if (filterVal !== 'all') {
+                    const cutoff = new Date();
+                    cutoff.setDate(cutoff.getDate() - parseInt(filterVal));
+                    query = query.gte('checkin_time', cutoff.toISOString());
+                }
+                const { data: logsData, error: logsErr } = await query.limit(100);
+                if (logsErr) throw logsErr;
+                logs = logsData;
+            } catch(logsException) {
+                logsContainer.innerHTML = '<p style="color:#e74c3c; font-size:12px; text-align:center;">خطأ في تحميل سجل الشيفتات: ' + (logsException?.message || logsException) + '</p>';
+                return;
             }
-            const { data: logs } = await query.limit(100);
             // حساب إحصائيات من الطلبات
             const { data: completedOrders } = await _client.from('sh_public_orders').select('created_at, status').eq('driver_id', selectedShiftDriverId).eq('status', 'completed');
             const { data: cancelledOrders } = await _client.from('sh_public_orders').select('created_at, status').eq('driver_id', selectedShiftDriverId).in('status', ['cancelled', 'no_driver']);
@@ -4709,7 +4775,8 @@
 
         async function refreshShiftDetail() {
             if (!selectedShiftDriverId) return;
-            const { data } = await _client.from('drivers').select('id, name, status, driver_type, shift_start, shift_end, lat, lng').eq('id', selectedShiftDriverId).single();
+            // [FIX-SHIFT-2] إزالة lat/lng — غير موجودَين في جدول drivers
+            const { data } = await _client.from('drivers').select('id, name, status, driver_type, shift_start, shift_end').eq('id', selectedShiftDriverId).single();
             if (data) {
                 selectedShiftDriverData = data;
                 await openShiftDetail(selectedShiftDriverId, data);
@@ -5037,6 +5104,8 @@
             const whatsapp1  = document.getElementById('contact-whatsapp1')?.value.trim() || '';
             const whatsapp2  = document.getElementById('contact-whatsapp2')?.value.trim() || '';
             const driverTelegram = document.getElementById('driver-telegram-channel')?.value.trim() || '';
+            // [CONTACT-FIX-1] حقل قناة واتساب الجديد
+            const driverWhatsappChannel = document.getElementById('driver-whatsapp-channel')?.value.trim() || '';
 
             if (!whatsapp1) { showNotify('يرجى إدخال رقم واتساب 1 على الأقل'); return; }
 
@@ -5044,31 +5113,39 @@
             if (statusEl) { statusEl.style.display = 'block'; statusEl.style.color = '#f39c12'; statusEl.innerText = 'جاري الحفظ...'; }
 
             try {
-                // ===== محاولة update أولاً (السجل موجود) =====
-                let payload = { contact_whatsapp1: whatsapp1, contact_whatsapp2: whatsapp2 };
-                if (instagram !== undefined) payload.contact_instagram = instagram;
-                if (facebook  !== undefined) payload.contact_facebook  = facebook;
+                // [CONTACT-FIX-4] الخطوة 1: حفظ الحقول الأساسية المضمونة الوجود
+                const corePayload = {
+                    id: 1,
+                    contact_whatsapp1: whatsapp1,
+                    contact_whatsapp2: whatsapp2,
+                    contact_instagram: instagram,
+                    contact_facebook:  facebook
+                };
+                const { error: coreErr } = await _client.from('app_config').upsert(corePayload, { onConflict: 'id' });
+                if (coreErr) throw coreErr;
 
-                let { error: updErr } = await _client.from('app_config').update(payload).eq('id', 1);
-
-                // إذا فشل update (السجل غير موجود) → insert
-                if (updErr && updErr.code === 'PGRST116') {
-                    const { error: insErr } = await _client.from('app_config').insert([{ id: 1, ...payload }]);
-                    if (insErr) throw insErr;
-                } else if (updErr) {
-                    // محاولة upsert كحل بديل
-                    const { error: upErr } = await _client.from('app_config').upsert({ id: 1, ...payload });
-                    if (upErr) throw upErr;
+                // [CONTACT-FIX-5] الخطوة 2: حفظ driver_telegram_channel بشكل منفصل
+                // إذا لم يكن العمود موجوداً بعد → يفشل بصمت بدون إيقاف العملية
+                if (driverTelegram !== '') {
+                    try {
+                        await _client.from('app_config').update({ driver_telegram_channel: driverTelegram }).eq('id', 1);
+                    } catch(tgErr) {
+                        console.warn('driver_telegram_channel save skipped (column may not exist yet):', tgErr?.message);
+                    }
                 }
 
-                // ===== حفظ قناة التليجرام بشكل منفصل =====
-                if (driverTelegram !== '') {
-                    try { await _client.from('app_config').update({ driver_telegram_channel: driverTelegram }).eq('id', 1); } catch(e) {}
+                // [CONTACT-FIX-6] الخطوة 3: حفظ driver_whatsapp_channel بشكل منفصل
+                if (driverWhatsappChannel !== '') {
+                    try {
+                        await _client.from('app_config').update({ driver_whatsapp_channel: driverWhatsappChannel }).eq('id', 1);
+                    } catch(waErr) {
+                        console.warn('driver_whatsapp_channel save skipped (column may not exist yet):', waErr?.message);
+                    }
                 }
 
                 await addSystemLog('تحديث إعدادات التواصل مع الإدارة');
-                showNotify('✅ تم حفظ إعدادات التواصل');
-                if (statusEl) { statusEl.style.color = '#2ecc71'; statusEl.innerText = '✅ تم الحفظ بنجاح'; }
+                showNotify('✅ تم حفظ إعدادات التواصل وإرسالها للمناديب فوراً');
+                if (statusEl) { statusEl.style.color = '#2ecc71'; statusEl.innerText = '✅ تم الحفظ بنجاح — يظهر فوراً عند المناديب'; }
 
             } catch(e) {
                 console.error('saveContactSettings error:', e);
@@ -5078,21 +5155,22 @@
         }
 
         async function loadContactSettings() {
-            // نقرأ الحقول الأساسية فقط - driver_telegram_channel قد لا يكون موجوداً بعد
-            const { data: config } = await _client.from('app_config').select('contact_instagram, contact_facebook, contact_whatsapp1, contact_whatsapp2').eq('id', 1).single();
+            // [CONTACT-FIX-3] قراءة جميع حقول التواصل بما يشمل driver_whatsapp_channel الجديد
+            const { data: config } = await _client.from('app_config').select('contact_instagram, contact_facebook, contact_whatsapp1, contact_whatsapp2, driver_telegram_channel, driver_whatsapp_channel').eq('id', 1).single();
             if (config) {
                 if (document.getElementById('contact-instagram'))  document.getElementById('contact-instagram').value  = config.contact_instagram  || '';
                 if (document.getElementById('contact-facebook'))   document.getElementById('contact-facebook').value   = config.contact_facebook   || '';
                 if (document.getElementById('contact-whatsapp1'))  document.getElementById('contact-whatsapp1').value  = config.contact_whatsapp1  || '';
                 if (document.getElementById('contact-whatsapp2'))  document.getElementById('contact-whatsapp2').value  = config.contact_whatsapp2  || '';
-                // ===== تحميل حقل تيليجرام المناديب (بشكل منفصل لتحمل غياب العمود) =====
-                try {
-                    const { data: tgCfg } = await _client.from('app_config').select('driver_telegram_channel').eq('id', 1).single();
-                    if (tgCfg && document.getElementById('driver-telegram-channel')) {
-                        document.getElementById('driver-telegram-channel').value = tgCfg.driver_telegram_channel || '';
-                    }
-                } catch(e) { /* العمود غير موجود بعد - يُضاف بـ SQL الإعداد */ }
-                // ===== نهاية تحميل تيليجرام =====
+                // ===== تحميل حقل تيليجرام المناديب =====
+                if (document.getElementById('driver-telegram-channel')) {
+                    document.getElementById('driver-telegram-channel').value = config.driver_telegram_channel || '';
+                }
+                // ===== تحميل حقل قناة واتساب المناديب =====
+                if (document.getElementById('driver-whatsapp-channel')) {
+                    document.getElementById('driver-whatsapp-channel').value = config.driver_whatsapp_channel || '';
+                }
+                // ===== نهاية تحميل حقول التواصل =====
             }
         }
         // ===== نهاية دوال التواصل مع الإدارة =====
@@ -8387,6 +8465,61 @@ UPDATE public.restaurants SET is_direct_contact = false WHERE branch != 'شري�
             document.getElementById('gm-modal-title').innerText = '🔏 ' + (item.title || 'معاملة');
             const preview = document.getElementById('gm-doc-preview');
             preview.innerHTML = item.doc_html || '<div style="padding:20px;text-align:center;color:#888;"><i class="fas fa-file-alt" style="font-size:40px;display:block;margin-bottom:10px;"></i>لا يوجد معاينة للمستند</div>';
+
+            // [TYPE-BADGE] إضافة شارة نوع المعاملة فوق المستند لتوضيح ما سيتم اعتماده
+            try {
+                const _txTypeMap = {
+                    'add_restaurant':     { label: 'مطعم',         icon: '🍽️', color: '#2ecc71' },
+                    'hiring':             { label: 'قبول مندوب',   icon: '🦅', color: '#3498db' },
+                    'manual_driver':      { label: 'إضافة مندوب',  icon: '🦅', color: '#3498db' },
+                    'settlement':         { label: 'تسوية مالية',  icon: '💰', color: '#f39c12' },
+                    'financing_approval': { label: 'اعتماد تمويل', icon: '💳', color: '#9b59b6' },
+                    'add_staff':          { label: 'إضافة موظف',   icon: '👤', color: '#e67e22' },
+                    'terminate_service':  { label: 'إنهاء خدمة',   icon: '🚫', color: '#e74c3c' },
+                    'res_partnership':    { label: 'شراكة مطعم',   icon: '🤝', color: '#16a085' },
+                    'pharma_partnership': { label: 'شراكة صيدلية', icon: '💊', color: '#27ae60' },
+                    'sweets_partnership': { label: 'شراكة حلويات', icon: '🍬', color: '#e91e8c' },
+                    'document':           { label: 'مستند رسمي',   icon: '📄', color: '#7f8c8d' },
+                };
+                const _tInfo = _txTypeMap[item.type] || { label: item.type || 'معاملة', icon: '📋', color: '#d4af37' };
+                // تحديد نوع الإجراء: إضافة أو تعديل أو غير ذلك
+                let _actionLabel = 'إضافة';
+                let _actionColor = '#2ecc71';
+                const _dRaw = typeof item.details === 'string' ? JSON.parse(item.details || '{}') : (item.details || {});
+                if (item.type === 'add_restaurant') {
+                    if (_dRaw.resId && _dRaw.resId !== '') {
+                        _actionLabel = 'تعديل';
+                        _actionColor = '#f39c12';
+                    } else {
+                        _actionLabel = 'إضافة جديدة';
+                        _actionColor = '#2ecc71';
+                    }
+                } else if (item.type === 'settlement') {
+                    _actionLabel = 'تسوية';
+                    _actionColor = '#f39c12';
+                } else if (item.type === 'terminate_service') {
+                    _actionLabel = 'إنهاء';
+                    _actionColor = '#e74c3c';
+                } else if (item.type === 'financing_approval') {
+                    _actionLabel = 'اعتماد';
+                    _actionColor = '#9b59b6';
+                } else if (item.type === 'hiring' || item.type === 'manual_driver') {
+                    _actionLabel = 'قبول وتفعيل';
+                    _actionColor = '#3498db';
+                }
+                const _typeDiv = document.createElement('div');
+                _typeDiv.style.cssText = 'display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 14px;margin-bottom:12px;background:rgba(0,0,0,0.35);border-right:4px solid ' + _tInfo.color + ';border-radius:10px;';
+                _typeDiv.innerHTML =
+                    '<span style="font-size:18px;">' + _tInfo.icon + '</span>' +
+                    '<span style="font-weight:bold;color:#fff;font-size:13px;">نوع المعاملة:</span>' +
+                    '<span style="background:' + _tInfo.color + ';color:#000;padding:2px 10px;border-radius:12px;font-size:11px;font-weight:bold;">' + _tInfo.label + '</span>' +
+                    '<span style="background:' + _actionColor + ';color:#fff;padding:2px 10px;border-radius:12px;font-size:11px;font-weight:bold;">' + _actionLabel + '</span>' +
+                    (item.status === 'approved'
+                        ? '<span style="background:#2ecc71;color:#fff;padding:2px 10px;border-radius:12px;font-size:11px;font-weight:bold;margin-right:auto;">✅ معتمد</span>'
+                        : '<span style="background:rgba(241,196,15,0.2);color:#f1c40f;padding:2px 10px;border-radius:12px;font-size:11px;border:1px solid #f1c40f;margin-right:auto;">⏳ بانتظار الختم</span>');
+                preview.insertBefore(_typeDiv, preview.firstChild);
+            } catch(_badgeErr) { /* تجاهل خطأ الشارة */ }
+            // [END-TYPE-BADGE]
             // إذا كان مختوماً مسبقاً
             if (item.status === 'approved' && item.stamp_code) {
                 const existStamp = document.createElement('div');
@@ -8870,6 +9003,16 @@ UPDATE public.restaurants SET is_direct_contact = false WHERE branch != 'شري�
             } catch(_execErr) {
                 console.error('gmExecuteActionAfterStamp ERROR:', _execErr);
                 const _execErrMsg = _execErr?.message || String(_execErr) || 'خطأ في تنفيذ الإجراء';
+                // [FIX-EXEC-ERR] إظهار الخطأ في شريط الخطأ الثابت — لا يختفي مثل showNotify
+                const _execErrBar = document.getElementById('gm-stamp-error-bar');
+                if (_execErrBar) {
+                    _execErrBar.style.display = 'block';
+                    _execErrBar.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:#e74c3c;margin-left:6px;"></i>
+                        <b style="color:#e74c3c;">⚠️ تم الختم لكن فشل تنفيذ الإجراء:</b><br>
+                        <span style="font-family:monospace;font-size:10px;color:#ffb3ae;display:block;margin-top:4px;">${_execErrMsg}</span>
+                        <small style="color:#888;font-size:9px;">${new Date().toLocaleString('ar-SA')}</small>
+                        <br><small style="color:#aaa;font-size:9px;">💡 يمكنك المحاولة مرة أخرى — الختم تم بنجاح لكن الإجراء التلقائي فشل</small>`;
+                }
                 showNotify('⚠️ تم الختم لكن فشل تنفيذ الإجراء: ' + _execErrMsg);
                 try { await addSystemLog('⚠️ خطأ في تنفيذ ما بعد الختم: ' + _execErrMsg); } catch(e2) {}
             }
@@ -9171,6 +9314,8 @@ ALTER TABLE public.app_config ADD COLUMN IF NOT EXISTS contact_facebook text DEF
 ALTER TABLE public.app_config ADD COLUMN IF NOT EXISTS contact_whatsapp1 text DEFAULT '';
 ALTER TABLE public.app_config ADD COLUMN IF NOT EXISTS contact_whatsapp2 text DEFAULT '';
 ALTER TABLE public.app_config ADD COLUMN IF NOT EXISTS driver_telegram_channel text DEFAULT '';
+-- [NEW] عمود قناة واتساب المناديب
+ALTER TABLE public.app_config ADD COLUMN IF NOT EXISTS driver_whatsapp_channel text DEFAULT '';
 
 -- عمود صلاحية تجهيز الطلبات في جدول المطاعم (إذا لم يكن موجوداً)
 ALTER TABLE public.restaurants ADD COLUMN IF NOT EXISTS allow_orders boolean DEFAULT false;
@@ -9189,6 +9334,8 @@ ALTER TABLE public.drivers ADD COLUMN IF NOT EXISTS doc_driving_license text DEF
 ALTER TABLE public.drivers ADD COLUMN IF NOT EXISTS doc_selfie text DEFAULT NULL;
 -- ===== عمود قناة تيليجرام المناديب =====
 ALTER TABLE public.app_config ADD COLUMN IF NOT EXISTS driver_telegram_channel text DEFAULT '';
+-- ===== عمود قناة واتساب المناديب =====
+ALTER TABLE public.app_config ADD COLUMN IF NOT EXISTS driver_whatsapp_channel text DEFAULT '';
 -- ===== أعمدة نظام التمويل المتكامل =====
 ALTER TABLE public.drivers ADD COLUMN IF NOT EXISTS financing_target_progress numeric DEFAULT 0;
 ALTER TABLE public.drivers ADD COLUMN IF NOT EXISTS financing_notified boolean DEFAULT false;
