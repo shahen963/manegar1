@@ -442,6 +442,11 @@
             <span id="badge-active-orders" class="nav-badge" style="display:none;">0</span>
         </div>
         <!-- ===== نهاية الطلبات النشطة ===== -->
+        <!-- ===== أرشيف الطلبات المسلمة ===== -->
+        <div class="nav-link" data-perm="completed-archive-view" onclick="switchView('completed-archive-view')">
+            <i class="fas fa-archive"></i> أرشيف التسليمات
+        </div>
+        <!-- ===== نهاية أرشيف الطلبات ===== -->
         <!-- ===== قسم تتبع الشيفتات الجديد ===== -->
         <div class="nav-link" data-perm="shift-tracking-view" onclick="switchView('shift-tracking-view')"><i class="fas fa-user-clock"></i> تتبع الشيفتات</div>
         <!-- ===== نهاية قسم تتبع الشيفتات ===== -->
@@ -614,11 +619,8 @@
         <div id="customers-view" class="view-section">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; flex-wrap:wrap; gap:10px;">
                 <h2 style="color:var(--gold); margin:0;">سجلات عملاء الشاهين 🦅</h2>
-                <button class="btn btn-gold" id="toggle-customers-btn" onclick="toggleCustomersTable()" style="padding:8px 16px; font-size:12px; background:var(--glass); border:1px solid var(--gold); color:var(--gold-l);">
-                    <i class="fas fa-eye"></i> عرض السجل
-                </button>
             </div>
-            <div id="customers-table-wrapper" style="display:none;">
+            <div id="customers-table-wrapper">
                 <div class="map-search-container">
                     <i class="fas fa-search"></i>
                     <input type="text" id="cust-search-input" placeholder="ابحث عن عميل بالاسم أو الجوال..." onkeyup="filterCustomersTable()">
@@ -627,13 +629,12 @@
                     <thead>
                         <tr><th>الاسم الكامل</th><th>التواصل</th><th>نقاط الشاهين</th><th>تاريخ الانضمام</th><th>الإجراء</th></tr>
                     </thead>
-                    <tbody id="customers-table-body"></tbody>
+                    <tbody id="customers-table-body">
+                        <tr><td colspan="5" style="text-align:center;padding:20px;color:#888;"><i class="fas fa-spinner fa-spin"></i> جاري التحميل...</td></tr>
+                    </tbody>
                 </table>
             </div>
-            <div id="customers-hidden-msg" style="text-align:center; padding:40px; color:#666; background:var(--glass); border-radius:12px; border:1px dashed rgba(212,175,55,0.3);">
-                <i class="fas fa-lock" style="font-size:30px; color:var(--gold); display:block; margin-bottom:10px; opacity:0.5;"></i>
-                <p style="margin:0; font-size:13px;">البيانات محمية — اضغط "عرض السجل" للاطلاع على سجلات العملاء</p>
-            </div>
+            <div id="customers-hidden-msg" style="display:none;"></div>
         </div>
 
         <div id="orders-view" class="view-section">
@@ -929,6 +930,117 @@
             </div>
         </div>
         <!-- ===== نهاية قسم الطلبات النشطة ===== -->
+
+        <!-- ===== قسم أرشيف الطلبات المسلمة بنجاح ===== -->
+        <div id="completed-archive-view" class="view-section">
+
+            <!-- رأس الصفحة -->
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:10px;">
+                <h2 style="color:var(--gold); margin:0;"><i class="fas fa-archive"></i> أرشيف الطلبات المسلمة 🦅</h2>
+                <div style="display:flex; gap:8px;">
+                    <button id="ca-toggle-btn" class="btn btn-gold"
+                        style="padding:8px 18px; font-size:12px; background:var(--glass); border:1px solid var(--gold); color:var(--gold-l);"
+                        onclick="toggleArchiveTable()">
+                        <i class="fas fa-eye"></i> عرض السجل
+                    </button>
+                    <button class="btn btn-gold" style="padding:8px 18px; font-size:12px;" onclick="loadCompletedArchive()">
+                        <i class="fas fa-sync-alt"></i> تحديث
+                    </button>
+                </div>
+            </div>
+            <p style="color:#aaa; font-size:12px; margin-bottom:20px;">يعرض هذا القسم جميع الطلبات التي تم تسليمها بنجاح فقط — محفوظة بشكل دائم.</p>
+
+            <!-- إحصائيات سريعة — تظهر دائماً -->
+            <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:15px; margin-bottom:25px;">
+                <div class="stat-card" style="border:1px solid #2ecc71; background:rgba(46,204,113,0.06); text-align:center;">
+                    <i class="fas fa-check-double" style="color:#2ecc71;"></i>
+                    <h3 id="ca-total-count" style="color:#2ecc71; font-size:26px; font-weight:900; margin:6px 0;">0</h3>
+                    <p style="color:#2ecc71; font-size:12px;">إجمالي الطلبات المسلمة</p>
+                </div>
+                <div class="stat-card" style="border:1px solid #3498db; background:rgba(52,152,219,0.06); text-align:center;">
+                    <i class="fas fa-users" style="color:#3498db;"></i>
+                    <h3 id="ca-unique-customers" style="color:#3498db; font-size:26px; font-weight:900; margin:6px 0;">0</h3>
+                    <p style="color:#3498db; font-size:12px;">عملاء فريدون</p>
+                </div>
+                <div class="stat-card" style="border:1px solid var(--gold); background:rgba(212,175,55,0.06); text-align:center;">
+                    <i class="fas fa-money-bill-wave" style="color:var(--gold);"></i>
+                    <h3 id="ca-total-revenue" style="color:var(--gold); font-size:22px; font-weight:900; margin:6px 0;">0</h3>
+                    <p style="color:var(--gold); font-size:12px;">إجمالي الإيرادات</p>
+                </div>
+                <div class="stat-card" style="border:1px solid #9b59b6; background:rgba(155,89,182,0.06); text-align:center;">
+                    <i class="fas fa-trophy" style="color:#9b59b6;"></i>
+                    <h3 id="ca-top-driver" style="color:#9b59b6; font-size:14px; font-weight:bold; margin:6px 0;">—</h3>
+                    <p style="color:#9b59b6; font-size:12px;">أكثر مندوب تسليماً</p>
+                </div>
+            </div>
+
+            <!-- ===== نظام السحب العشوائي — يظهر دائماً ===== -->
+            <div style="background:linear-gradient(135deg,rgba(212,175,55,0.08),rgba(155,89,182,0.08)); border:2px solid var(--gold); border-radius:16px; padding:20px; margin-bottom:25px;">
+                <div style="display:flex; align-items:center; gap:10px; margin-bottom:15px;">
+                    <i class="fas fa-random" style="color:var(--gold); font-size:20px;"></i>
+                    <h3 style="color:var(--gold); margin:0; font-size:16px;">🎰 نظام السحب العشوائي للمسابقات</h3>
+                </div>
+                <p style="color:#aaa; font-size:12px; margin-bottom:15px;">السحب يعتمد حصراً على الطلبات المسلمة بنجاح — كل عميل لا يفوز إلا مرة واحدة.</p>
+                <div style="display:flex; align-items:center; gap:15px; flex-wrap:wrap;">
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <label style="color:var(--gold); font-size:13px; font-weight:bold; white-space:nowrap;">عدد الفائزين:</label>
+                        <select id="ca-winners-count" style="background:var(--p-dark); color:white; border:1px solid var(--gold); padding:8px 14px; border-radius:8px; font-size:13px; cursor:pointer;">
+                            <option value="1">1 فائز</option>
+                            <option value="2">2 فائزين</option>
+                            <option value="3">3 فائزين</option>
+                            <option value="5">5 فائزين</option>
+                            <option value="10">10 فائزين</option>
+                            <option value="custom">عدد مخصص...</option>
+                        </select>
+                        <input type="number" id="ca-winners-custom" min="1" max="100" placeholder="العدد"
+                            style="display:none; background:var(--p-dark); color:white; border:1px solid var(--gold); padding:8px 10px; border-radius:8px; font-size:13px; width:90px;"
+                            onchange="document.getElementById('ca-winners-count').value='custom'">
+                    </div>
+                    <button class="btn btn-gold" style="padding:10px 24px; font-size:13px; background:linear-gradient(135deg,var(--gold),#f1c40f);" onclick="runLotteryDraw()">
+                        <i class="fas fa-dice"></i> ابدأ السحب العشوائي 🎲
+                    </button>
+                    <button class="btn" style="padding:8px 16px; font-size:12px; background:var(--glass); color:#aaa; border:1px solid #444;" onclick="clearLotteryResult()">
+                        <i class="fas fa-times"></i> مسح النتيجة
+                    </button>
+                </div>
+                <!-- نتيجة السحب -->
+                <div id="ca-lottery-result" style="display:none; margin-top:18px;"></div>
+            </div>
+            <!-- ===== نهاية نظام السحب ===== -->
+
+            <!-- ===== الجدول — مخفي افتراضياً ===== -->
+            <div id="ca-archive-section" style="display:none;">
+                <!-- مربع البحث -->
+                <div style="background:var(--p-main); border:1px solid rgba(212,175,55,0.3); border-radius:12px; padding:16px; margin-bottom:18px;">
+                    <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
+                        <i class="fas fa-search" style="color:var(--gold);"></i>
+                        <h4 style="color:var(--gold); margin:0; font-size:14px;">البحث في الأرشيف</h4>
+                    </div>
+                    <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+                        <input type="text" id="ca-search-input"
+                            placeholder="ابحث: رقم الطلب، اسم العميل، رقم الحساب، رقم الجوال، اسم المنتج..."
+                            style="flex:1; min-width:280px; background:var(--p-dark); color:white; border:1px solid rgba(212,175,55,0.4); padding:10px 14px; border-radius:8px; font-size:13px; outline:none;"
+                            oninput="filterCompletedArchive()">
+                        <button class="btn" style="padding:10px 16px; background:rgba(231,76,60,0.15); border:1px solid #e74c3c; color:#e74c3c; font-size:12px; border-radius:8px; cursor:pointer;"
+                            onclick="document.getElementById('ca-search-input').value=''; filterCompletedArchive();">
+                            <i class="fas fa-times"></i> مسح
+                        </button>
+                        <span id="ca-search-count" style="font-size:12px; color:#aaa; white-space:nowrap;"></span>
+                    </div>
+                </div>
+                <!-- جدول الأرشيف -->
+                <div id="ca-table-wrapper" style="overflow-x:auto;">
+                    <p style="text-align:center; color:#888; padding:40px;"><i class="fas fa-spinner fa-spin"></i> جاري تحميل الأرشيف...</p>
+                </div>
+            </div>
+            <!-- رسالة الإخفاء -->
+            <div id="ca-hidden-msg" style="text-align:center; padding:30px; background:var(--glass); border-radius:12px; border:1px dashed rgba(212,175,55,0.3);">
+                <i class="fas fa-lock" style="font-size:28px; color:var(--gold); display:block; margin-bottom:10px; opacity:0.5;"></i>
+                <p style="margin:0; font-size:13px; color:#666;">السجل محمي — اضغط "عرض السجل" للاطلاع على الأرشيف الكامل</p>
+            </div>
+
+        </div>
+        <!-- ===== نهاية قسم أرشيف الطلبات المسلمة ===== -->
 
         <div id="drivers-view" class="view-section">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
@@ -2621,7 +2733,12 @@
             }
         }
 
+        // الأقسام المتاحة لجميع موظفي الإدارة بدون قيد صلاحية
+        const _PUBLIC_VIEWS = ['settlement-view', 'customers-view', 'active-orders-view', 'completed-archive-view', 'tracking-view', 'shift-tracking-view', 'finance-view'];
+
         function checkPermission(perm) {
+            // أقسام عامة — متاحة لكل الموظفين
+            if (_PUBLIC_VIEWS.includes(perm)) return true;
             if (currentStaffPerms.includes("all") || currentStaffPerms.includes(perm)) return true;
             showNotify(`عذراً يا ${currentStaff.split(' ')[0]}، هذه الأيقونة ليست ضمن صلاحياتك.`);
             return false;
@@ -2659,6 +2776,7 @@
             if(id === 'hiring-view') loadHiringRequests();
             if(id === 'drivers-view') loadDriversTable();
             if(id === 'active-orders-view') loadActiveOrdersView();
+            if(id === 'completed-archive-view') loadCompletedArchive();
             if(id === 'res-view') loadRestaurants();
             if(id === 'news-points-view') loadNewsAndPoints();
             if(id === 'discount-view') loadCoupons();
@@ -4675,6 +4793,493 @@
         }
         // ===== نهاية نظام الطلبات النشطة =====
 
+        // ============================================================
+        // ===== أرشيف الطلبات المسلمة بنجاح + السحب العشوائي =====
+        // ============================================================
+
+        // ── عرض / إخفاء جدول الأرشيف ──
+        let _caArchiveVisible = false;
+
+        function toggleArchiveTable() {
+            _caArchiveVisible = !_caArchiveVisible;
+            const section = document.getElementById('ca-archive-section');
+            const hiddenMsg = document.getElementById('ca-hidden-msg');
+            const btn = document.getElementById('ca-toggle-btn');
+            if (_caArchiveVisible) {
+                section.style.display = 'block';
+                hiddenMsg.style.display = 'none';
+                btn.innerHTML = '<i class="fas fa-eye-slash"></i> إخفاء السجل';
+                btn.style.background = 'rgba(212,175,55,0.15)';
+                // حمّل البيانات إن لم تكن محمّلة بعد
+                if (_caAllOrders.length === 0) loadCompletedArchive();
+            } else {
+                section.style.display = 'none';
+                hiddenMsg.style.display = 'block';
+                btn.innerHTML = '<i class="fas fa-eye"></i> عرض السجل';
+                btn.style.background = 'var(--glass)';
+            }
+        }
+
+        // ============================================================
+        // ===== أرشيف الطلبات المسلمة — محسَّن (حقول مختارة فقط) =====
+        // ============================================================
+
+        // الحقول المطلوبة فقط — تقليل الضغط على قاعدة البيانات
+        // phone = رقم جوال العميل المخزّن مباشرة في الطلب
+        const _CA_SELECT_FIELDS = 'id,customer_name,phone,customer_id,driver_name,res_type,restaurant_name,items,total,created_at';
+
+        // ذاكرة مؤقتة للأرشيف داخل الجلسة فقط
+        let _caAllOrders   = [];
+        let _caPageSize    = 200;
+        let _caCurrentPage = 0;
+        let _caTotalCount  = 0;
+        let _caLoading     = false;
+
+        // خريطة العملاء (id → phone) تُبنى مرة واحدة عند التحميل
+        let _caCustomerPhoneMap = {};
+
+        // ── مساعدة: جوال العميل من الطلب أو من خريطة العملاء ──
+        function _caGetPhone(order) {
+            return order.phone
+                || _caCustomerPhoneMap[order.customer_id]
+                || '—';
+        }
+
+        // ── مساعدة: رابط واتساب من رقم الجوال ──
+        function _caWaLink(phone) {
+            if (!phone || phone === '—') return null;
+            const p = phone.replace(/\D/g, '');
+            if (p.startsWith('09')) return 'https://wa.me/963' + p.substring(1);
+            if (p.startsWith('05')) return 'https://wa.me/966' + p.substring(1);
+            if (p.startsWith('07')) return 'https://wa.me/964' + p.substring(1);
+            if (p.length >= 10)    return 'https://wa.me/' + p;
+            return null;
+        }
+
+        // ── مساعدة: استخراج اسم المنتج ──
+        function _caParseItems(order) {
+            try {
+                const items = typeof order.items === 'string' ? JSON.parse(order.items) : order.items;
+                if (Array.isArray(items) && items.length > 0)
+                    return items.map(i => i.n || i.name || '').filter(Boolean).join(' ، ') || '—';
+            } catch(e) {}
+            return '—';
+        }
+
+        // ── مساعدة: نوع الطلب ──
+        function _caOrderType(rt) {
+            if (rt === 'pharmacy' || rt === 'pharmacy_delivery') return '💊 صيدلية';
+            if (rt === 'sweets')   return '🍬 حلويات';
+            if (rt === 'flowers')  return '🌸 ورود';
+            if (rt === 'wassayni') return '🥡 صيني';
+            if (rt === 'specialty') return '🎁 متجر';
+            return '🍽️ مطعم';
+        }
+
+        async function loadCompletedArchive() {
+            // عند الضغط على تحديث — أظهر السجل تلقائياً إن كان مخفياً
+            if (!_caArchiveVisible) {
+                _caArchiveVisible = true;
+                const section = document.getElementById('ca-archive-section');
+                const hiddenMsg = document.getElementById('ca-hidden-msg');
+                const btn = document.getElementById('ca-toggle-btn');
+                if (section) section.style.display = 'block';
+                if (hiddenMsg) hiddenMsg.style.display = 'none';
+                if (btn) { btn.innerHTML = '<i class="fas fa-eye-slash"></i> إخفاء السجل'; btn.style.background = 'rgba(212,175,55,0.15)'; }
+            }
+
+            if (_caLoading) return;
+            _caLoading = true;
+            const wrapper = document.getElementById('ca-table-wrapper');
+            if (!wrapper) { _caLoading = false; return; }
+            wrapper.innerHTML = '<p style="text-align:center; color:#888; padding:40px;"><i class="fas fa-spinner fa-spin"></i> جاري تحميل الأرشيف...</p>';
+
+            // ── جلب أرقام جوال العملاء (خفيف: id + phone فقط) ──
+            try {
+                const { data: custData } = await _client.from('customers').select('id,phone');
+                if (custData) custData.forEach(c => { if (c.phone) _caCustomerPhoneMap[c.id] = c.phone; });
+            } catch(e) {}
+
+            // ── إجمالي العدد (count فقط) ──
+            const { count: total } = await _client
+                .from('sh_public_orders')
+                .select('*', { count: 'exact', head: true })
+                .eq('status', 'completed');
+            _caTotalCount = total || 0;
+
+            // ── أول 200 سجل فقط ──
+            const { data: orders, error } = await _client
+                .from('sh_public_orders')
+                .select(_CA_SELECT_FIELDS)
+                .eq('status', 'completed')
+                .order('created_at', { ascending: false })
+                .range(0, _caPageSize - 1);
+
+            _caLoading = false;
+
+            if (error) {
+                wrapper.innerHTML = `<p style="color:#e74c3c; text-align:center; padding:30px;">❌ خطأ: ${error.message}</p>`;
+                return;
+            }
+
+            _caAllOrders   = orders || [];
+            _caCurrentPage = 0;
+
+            // ── إحصائيات ──
+            const uniqueCustomers = new Set(_caAllOrders.map(o => _caGetPhone(o) !== '—' ? _caGetPhone(o) : o.customer_name).filter(Boolean)).size;
+            const totalRevenue    = _caAllOrders.reduce((s, o) => s + (parseFloat(o.total) || 0), 0);
+            const driverFreq = {};
+            _caAllOrders.forEach(o => { if (o.driver_name) driverFreq[o.driver_name] = (driverFreq[o.driver_name] || 0) + 1; });
+            const topDriver = Object.keys(driverFreq).sort((a,b) => driverFreq[b]-driverFreq[a])[0] || '—';
+
+            const set = (id, v) => { const el = document.getElementById(id); if (el) el.innerText = v; };
+            set('ca-total-count',      _caTotalCount.toLocaleString());
+            set('ca-unique-customers', uniqueCustomers.toLocaleString());
+            set('ca-total-revenue',    totalRevenue.toLocaleString() + ' ل.س');
+            set('ca-top-driver',       topDriver);
+
+            _renderCompletedTable(_caAllOrders, _caTotalCount);
+        }
+
+        function _renderCompletedTable(orders, totalCount) {
+            const wrapper = document.getElementById('ca-table-wrapper');
+            if (!wrapper) return;
+            const countEl = document.getElementById('ca-search-count');
+
+            if (!orders || orders.length === 0) {
+                if (countEl) countEl.innerText = 'لا توجد نتائج';
+                wrapper.innerHTML = `
+                    <div style="text-align:center; padding:60px; opacity:0.6;">
+                        <i class="fas fa-box-open" style="font-size:48px; color:var(--gold); display:block; margin-bottom:15px;"></i>
+                        <p style="color:#aaa;">لا توجد طلبات مسلمة بنجاح تطابق البحث</p>
+                    </div>`;
+                return;
+            }
+
+            if (countEl) countEl.innerText = `يعرض ${orders.length.toLocaleString()} من إجمالي ${(totalCount||orders.length).toLocaleString()}`;
+
+            let rows = '';
+            orders.forEach(order => {
+                const itemsStr  = _caParseItems(order);
+                const orderType = _caOrderType(order.res_type || '');
+                const dateStr   = new Date(order.created_at).toLocaleDateString('ar-SA');
+                const timeStr   = new Date(order.created_at).toLocaleTimeString('ar-SA', { hour:'2-digit', minute:'2-digit' });
+                const orderId   = String(order.id);
+                const custPhone = _caGetPhone(order);
+                const custId    = order.customer_id ? String(order.customer_id).substring(0,10) : '—';
+                const waLink    = _caWaLink(custPhone);
+
+                const phoneCell = waLink
+                    ? `<a href="${waLink}" target="_blank" style="color:#25d366;font-family:monospace;font-size:12px;text-decoration:none;"><i class="fab fa-whatsapp"></i> ${custPhone}</a>`
+                    : `<span style="color:#aaa;font-size:12px;">—</span>`;
+
+                rows += `<tr>
+                    <td style="font-family:monospace;color:var(--gold);font-size:12px;">#${orderId.substring(0,10)}</td>
+                    <td style="font-size:12px;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${itemsStr}">${itemsStr}</td>
+                    <td style="font-size:11px;">${orderType}</td>
+                    <td style="font-weight:bold;">${order.customer_name || '—'}</td>
+                    <td style="font-family:monospace;font-size:11px;color:#aaa;">${custId}</td>
+                    <td>${phoneCell}</td>
+                    <td style="color:#2ecc71;font-weight:bold;font-size:12px;">${order.driver_name || '—'}</td>
+                    <td style="font-size:11px;">
+                        <div style="color:#fff;">${dateStr}</div>
+                        <div style="color:#aaa;font-size:10px;">${timeStr}</div>
+                    </td>
+                </tr>`;
+            });
+
+            const hasMore = _caAllOrders.length < _caTotalCount && !document.getElementById('ca-search-input')?.value;
+            const loadMoreBtn = hasMore
+                ? `<div style="text-align:center;margin:15px 0;">
+                    <button onclick="loadMoreCompletedOrders()" style="background:rgba(212,175,55,0.15);border:1px solid var(--gold);color:var(--gold);padding:10px 28px;border-radius:10px;font-size:13px;cursor:pointer;">
+                        <i class="fas fa-chevron-down"></i> تحميل المزيد (${(_caTotalCount - _caAllOrders.length).toLocaleString()} متبقي)
+                    </button>
+                  </div>` : '';
+
+            wrapper.innerHTML = `
+            <table class="custom-table" style="font-size:12px;">
+                <thead><tr>
+                    <th>رقم الطلب</th><th>اسم الطلب / المنتج</th><th>نوع الطلب</th>
+                    <th>اسم العميل</th><th>رقم الحساب</th><th>رقم الجوال</th>
+                    <th>المندوب</th><th>تاريخ ووقت التسليم</th>
+                </tr></thead>
+                <tbody>${rows}</tbody>
+            </table>${loadMoreBtn}`;
+        }
+
+        async function loadMoreCompletedOrders() {
+            if (_caLoading) return;
+            _caLoading = true;
+            _caCurrentPage++;
+            const from = _caCurrentPage * _caPageSize;
+            const { data: more, error } = await _client
+                .from('sh_public_orders')
+                .select(_CA_SELECT_FIELDS)
+                .eq('status', 'completed')
+                .order('created_at', { ascending: false })
+                .range(from, from + _caPageSize - 1);
+            _caLoading = false;
+            if (error || !more) return;
+            _caAllOrders = [..._caAllOrders, ...more];
+            _renderCompletedTable(_caAllOrders, _caTotalCount);
+        }
+
+        function filterCompletedArchive() {
+            const q = (document.getElementById('ca-search-input')?.value || '').trim().toLowerCase();
+            if (!q) { _renderCompletedTable(_caAllOrders, _caTotalCount); return; }
+            const filtered = _caAllOrders.filter(order => {
+                const phone = _caGetPhone(order);
+                const base  = [
+                    String(order.id),
+                    order.customer_name   || '',
+                    phone,
+                    String(order.customer_id || ''),
+                    _caParseItems(order),
+                    order.restaurant_name || '',
+                    order.driver_name     || ''
+                ].join(' ').toLowerCase();
+                return base.includes(q);
+            });
+            _renderCompletedTable(filtered, filtered.length);
+        }
+
+        // ============================================================
+        // ===== السحب العشوائي — عداد تنازلي + ظهور عشوائي + واتساب =====
+        // ============================================================
+        let _lotteryRunning = false;
+
+        function runLotteryDraw() {
+            if (_lotteryRunning) return;
+            if (_caAllOrders.length === 0) {
+                showNotify('⚠️ حمّل الأرشيف أولاً ثم ابدأ السحب.');
+                return;
+            }
+
+            const selectEl = document.getElementById('ca-winners-count');
+            const customEl = document.getElementById('ca-winners-custom');
+            let count = parseInt(selectEl.value === 'custom' ? customEl.value : selectEl.value) || 1;
+            count = Math.min(Math.max(count, 1), _caAllOrders.length);
+
+            // ── خلط Fisher-Yates ثم إزالة التكرار بنفس العميل ──
+            const pool = [..._caAllOrders];
+            for (let i = pool.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [pool[i], pool[j]] = [pool[j], pool[i]];
+            }
+
+            // اختيار الفائزين مع ضمان عدم تكرار نفس العميل
+            const winners        = [];
+            const seenCustomers  = new Set(); // customer_id
+            const seenPhones     = new Set(); // phone — للعملاء بدون ID
+
+            for (const order of pool) {
+                if (winners.length >= count) break;
+
+                const cid   = order.customer_id ? String(order.customer_id) : null;
+                const phone = _caGetPhone(order);
+
+                // منع تكرار نفس العميل بأي من المعرّفَين
+                if (cid && seenCustomers.has(cid))    continue;
+                if (phone !== '—' && seenPhones.has(phone)) continue;
+
+                winners.push(order);
+                if (cid)        seenCustomers.add(cid);
+                if (phone !== '—') seenPhones.add(phone);
+            }
+
+            if (winners.length === 0) {
+                showNotify('⚠️ لا توجد طلبات كافية للسحب.');
+                _lotteryRunning = false;
+                return;
+            }
+
+            // خلط ترتيب الفائزين النهائيين
+            for (let i = winners.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [winners[i], winners[j]] = [winners[j], winners[i]];
+            }
+
+            _lotteryRunning = true;
+            const resultEl = document.getElementById('ca-lottery-result');
+            resultEl.style.display = 'block';
+
+            // ── عداد تنازلي 5 → 1 ──
+            resultEl.innerHTML = `
+                <div id="ca-cd-wrap" style="border-top:1px solid rgba(212,175,55,0.3);padding-top:20px;
+                    display:flex;flex-direction:column;align-items:center;gap:12px;">
+                    <div style="font-size:13px;color:#aaa;letter-spacing:2px;">🎲 جاري السحب العشوائي...</div>
+                    <div id="ca-cd-num" style="
+                        font-size:110px;font-weight:900;line-height:1;
+                        min-height:120px;display:flex;align-items:center;justify-content:center;
+                        color:var(--gold);text-shadow:0 0 50px rgba(212,175,55,0.9);
+                        transition:transform 0.12s ease,opacity 0.12s ease;">5</div>
+                    <div style="font-size:12px;color:#888;">
+                        السحب من <b style="color:var(--gold);">${_caAllOrders.length.toLocaleString()}</b> طلب مسلَّم
+                    </div>
+                </div>`;
+
+            const numEl  = document.getElementById('ca-cd-num');
+            let   current = 5;
+
+            function flipTo(val, cb) {
+                numEl.style.transform = 'scale(1.4)'; numEl.style.opacity = '0';
+                setTimeout(() => {
+                    numEl.innerText        = val;
+                    numEl.style.color      = val <= 2 ? '#e74c3c' : val === 3 ? '#f39c12' : 'var(--gold)';
+                    numEl.style.textShadow = val <= 2
+                        ? '0 0 50px rgba(231,76,60,1)'
+                        : val === 3 ? '0 0 50px rgba(243,156,18,1)'
+                        : '0 0 50px rgba(212,175,55,0.9)';
+                    numEl.style.transform = 'scale(0.6)'; numEl.style.opacity = '0';
+                    setTimeout(() => {
+                        numEl.style.transform = 'scale(1)'; numEl.style.opacity = '1';
+                        setTimeout(cb, 820);
+                    }, 60);
+                }, 130);
+            }
+
+            function tick() {
+                current--;
+                if (current <= 0) {
+                    numEl.style.transform = 'scale(1.4)'; numEl.style.opacity = '0';
+                    setTimeout(() => {
+                        numEl.innerText        = '🎉';
+                        numEl.style.fontSize   = '90px';
+                        numEl.style.textShadow = '0 0 60px rgba(255,255,255,0.7)';
+                        numEl.style.transform  = 'scale(1)'; numEl.style.opacity = '1';
+                        setTimeout(() => _revealWinners(winners, count, resultEl), 750);
+                    }, 130);
+                } else {
+                    flipTo(current, tick);
+                }
+            }
+            setTimeout(tick, 800);
+        }
+
+        // ── كشف الفائزين بترتيب عشوائي مع زر واتساب ──
+        function _revealWinners(winners, count, resultEl) {
+            // ترتيب ظهور مختلف تماماً عن ترتيب الفائزين
+            const revealOrder = winners.map((_, i) => i);
+            for (let i = revealOrder.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [revealOrder[i], revealOrder[j]] = [revealOrder[j], revealOrder[i]];
+            }
+
+            let html = `
+            <div style="border-top:1px solid rgba(212,175,55,0.3);padding-top:16px;">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap;">
+                    <i class="fas fa-trophy" style="color:var(--gold);font-size:18px;"></i>
+                    <h4 style="color:var(--gold);margin:0;">🎉 ${count} ${count===1?'فائز':'فائزين'} — ترتيب الظهور عشوائي</h4>
+                    <span style="font-size:11px;color:#aaa;margin-right:auto;">من ${_caAllOrders.length.toLocaleString()} طلب مسلَّم</span>
+                </div>
+                <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px;">`;
+
+            winners.forEach((w, i) => {
+                const itemsStr = _caParseItems(w);
+                const dateStr  = new Date(w.created_at).toLocaleDateString('ar-SA');
+                const custId   = w.customer_id ? String(w.customer_id).substring(0,10) : '—';
+                const phone    = _caGetPhone(w);
+                const waLink   = _caWaLink(phone);
+                const waMsg    = `🎉 مبروك! 🎉\nعميلنا العزيز ${w.customer_name || ''}،\n\nنهنئك بفوزك في مسابقة "معاك 30 ثانية" من شاهين إكسبرس! 🏆\n\nللمطالبة بجائزتك، يجب عليك الرد على هذه الرسالة خلال 30 ثانية فقط من استلامها، وإلا سيتم إلغاء الجائزة وتحويلها إلى فائز آخر وفق شروط المسابقة.\n\n⏳ سارع بالرد الآن بكلمة: "موافق" أو "استلمت" للحفاظ على حقك بالجائزة.\n\nرقم طلبك الفائز: #${String(w.id).substring(0,10)}\n\nنتمنى لك التوفيق دائمًا مع شاهين إكسبرس! 🚚✨`;
+
+                // زر واتساب لإرسال رسالة للفائز
+                const waBtnHtml = waLink
+                    ? `<a href="${waLink}?text=${encodeURIComponent(waMsg)}"
+                          target="_blank"
+                          style="display:flex;align-items:center;justify-content:center;gap:6px;
+                                 margin-top:10px;padding:8px;border-radius:8px;
+                                 background:rgba(37,211,102,0.15);border:1px solid #25d366;
+                                 color:#25d366;font-size:12px;font-weight:bold;text-decoration:none;
+                                 transition:background 0.2s;"
+                          onmouseover="this.style.background='rgba(37,211,102,0.3)'"
+                          onmouseout="this.style.background='rgba(37,211,102,0.15)'">
+                           <i class="fab fa-whatsapp" style="font-size:15px;"></i>
+                           إرسال تهنئة واتساب
+                       </a>`
+                    : `<div style="margin-top:10px;padding:8px;border-radius:8px;background:rgba(255,255,255,0.04);border:1px solid #444;color:#666;font-size:11px;text-align:center;">
+                           لا يوجد رقم جوال مسجّل
+                       </div>`;
+
+                html += `
+                <div id="ca-wcard-${i}" style="
+                    background:rgba(212,175,55,0.05);border:2px solid rgba(212,175,55,0.15);
+                    border-radius:14px;padding:15px;position:relative;
+                    opacity:0;transform:scale(0.85) translateY(18px);
+                    transition:opacity 0.4s ease,transform 0.4s ease,box-shadow 0.4s ease;">
+                    <div style="position:absolute;top:-11px;right:13px;background:var(--p-main);padding:0 7px;font-size:19px;">🎫</div>
+                    <div style="margin-top:7px;display:grid;gap:5px;">
+                        <div style="display:flex;justify-content:space-between;font-size:12px;padding-bottom:4px;border-bottom:1px solid rgba(255,255,255,0.06);">
+                            <span style="color:#aaa;">رقم الطلب</span>
+                            <b style="color:var(--gold);font-family:monospace;">#${String(w.id).substring(0,10)}</b>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;font-size:12px;">
+                            <span style="color:#aaa;">الطلب</span>
+                            <b style="color:#fff;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${itemsStr}">${itemsStr}</b>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;font-size:12px;">
+                            <span style="color:#aaa;">العميل</span>
+                            <b style="color:#2ecc71;">${w.customer_name || '—'}</b>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;font-size:12px;">
+                            <span style="color:#aaa;">رقم الحساب</span>
+                            <b style="color:#aaa;font-family:monospace;font-size:11px;">${custId}</b>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;font-size:12px;align-items:center;">
+                            <span style="color:#aaa;">الجوال</span>
+                            <b style="color:#3498db;font-family:monospace;">${phone}</b>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;font-size:12px;">
+                            <span style="color:#aaa;">تاريخ الطلب</span>
+                            <b style="color:#aaa;">${dateStr}</b>
+                        </div>
+                        ${waBtnHtml}
+                    </div>
+                </div>`;
+            });
+
+            html += `</div></div>`;
+            resultEl.innerHTML = html;
+
+            // ظهور تدريجي بترتيب عشوائي
+            revealOrder.forEach((cardIdx, step) => {
+                setTimeout(() => {
+                    const card = document.getElementById(`ca-wcard-${cardIdx}`);
+                    if (!card) return;
+                    card.style.opacity   = '1';
+                    card.style.transform = 'scale(1) translateY(0)';
+                    card.style.boxShadow = '0 0 22px rgba(212,175,55,0.6)';
+                    card.style.border    = '2px solid var(--gold)';
+                    setTimeout(() => {
+                        card.style.boxShadow = 'none';
+                        card.style.border    = '2px solid rgba(212,175,55,0.35)';
+                    }, 900);
+                    if (step === revealOrder.length - 1) {
+                        setTimeout(() => {
+                            _lotteryRunning = false;
+                            showNotify(`🎉 اكتمل السحب! ${count} ${count===1?'فائز':'فائزين'}`);
+                        }, 600);
+                    }
+                }, 350 + step * 400);
+            });
+        }
+
+        function clearLotteryResult() {
+            const el = document.getElementById('ca-lottery-result');
+            if (el) { el.innerHTML = ''; el.style.display = 'none'; }
+            _lotteryRunning = false;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const sel = document.getElementById('ca-winners-count');
+            const inp = document.getElementById('ca-winners-custom');
+            if (sel && inp) sel.addEventListener('change', () => {
+                inp.style.display = sel.value === 'custom' ? 'inline-block' : 'none';
+            });
+        });
+        // ===== نهاية أرشيف الطلبات المسلمة والسحب العشوائي =====
+
+
+
         async function loadDriversTable() {
             let query = _client.from('drivers').select('*');
             query = _applyCityFilter(query);
@@ -5541,28 +6146,50 @@
         }
 
         async function loadCustomersTable() {
-            const { data, error } = await _client.from('customers').select('*').order('created_at', { ascending: false });
             const tbody = document.getElementById('customers-table-body');
-            tbody.innerHTML = "";
-            if(data) {
-                data.forEach(cust => {
-                    const phone = cust.phone;
-                    const waLink = `https://wa.me/${phone.startsWith('09') ? '963' + phone.substring(1) : (phone.startsWith('05') ? '966' + phone.substring(1) : phone)}`;
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td>${cust.name}</td>
-                        <td><a href="${waLink}" target="_blank" style="color:#25d366; text-decoration:none;"><i class="fab fa-whatsapp"></i> ${cust.phone}</a></td>
-                        <td style="color:var(--gold); font-weight:bold;">${(cust.points || 0).toLocaleString()} نقطة</td>
-                        <td>${new Date(cust.created_at).toLocaleDateString('ar-SY')}</td>
-                        <td>
-                            <button class="btn btn-gold" onclick="openBalanceModal('${cust.id}', '${cust.name}', ${cust.points || 0})">الملف</button>
-                            <button class="btn btn-gold" style="background:#3498db; color:white; border-color:#3498db;" onclick="openCustomerMessageModal('${cust.id}', '${cust.name}')" title="مراسلة بريدية"><i class="fas fa-envelope"></i></button>
-                            <button class="btn btn-danger" style="padding:6px 10px; font-size:11px;" onclick="deleteCustomer('${cust.id}', '${cust.name}')" title="حذف العميل"><i class="fas fa-trash"></i></button>
-                        </td>
-                    `;
-                    tbody.appendChild(tr);
-                });
+            if (!tbody) return;
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:20px;color:#888;"><i class="fas fa-spinner fa-spin"></i> جاري تحميل العملاء...</td></tr>';
+
+            const { data, error } = await _client.from('customers').select('*').order('created_at', { ascending: false });
+
+            tbody.innerHTML = '';
+
+            if (error) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:#e74c3c;padding:20px;">❌ خطأ: ${error.message}</td></tr>`;
+                return;
             }
+            if (!data || data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#888;padding:30px;">لا يوجد عملاء مسجلون بعد</td></tr>';
+                return;
+            }
+
+            data.forEach(cust => {
+                const phone  = cust.phone || '';
+                let waLink   = null;
+                if (phone) {
+                    const p = phone.replace(/\D/g,'');
+                    if      (p.startsWith('09')) waLink = 'https://wa.me/963' + p.substring(1);
+                    else if (p.startsWith('05')) waLink = 'https://wa.me/966' + p.substring(1);
+                    else if (p.startsWith('07')) waLink = 'https://wa.me/964' + p.substring(1);
+                    else if (p.length >= 8)      waLink = 'https://wa.me/' + p;
+                }
+                const phoneCell = waLink
+                    ? `<a href="${waLink}" target="_blank" style="color:#25d366;text-decoration:none;"><i class="fab fa-whatsapp"></i> ${phone}</a>`
+                    : `<span style="color:#666;">${phone || '—'}</span>`;
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${cust.name || '—'}</td>
+                    <td>${phoneCell}</td>
+                    <td style="color:var(--gold);font-weight:bold;">${(cust.points||0).toLocaleString()} نقطة</td>
+                    <td>${new Date(cust.created_at).toLocaleDateString('ar-SY')}</td>
+                    <td>
+                        <button class="btn btn-gold" onclick="openBalanceModal('${cust.id}','${(cust.name||'').replace(/'/g,"\\'")}',${cust.points||0})">الملف</button>
+                        <button class="btn btn-gold" style="background:#3498db;color:white;border-color:#3498db;" onclick="openCustomerMessageModal('${cust.id}','${(cust.name||'').replace(/'/g,"\\'")}')"><i class="fas fa-envelope"></i></button>
+                        <button class="btn btn-danger" style="padding:6px 10px;font-size:11px;" onclick="deleteCustomer('${cust.id}','${(cust.name||'').replace(/'/g,"\\'")}')"><i class="fas fa-trash"></i></button>
+                    </td>`;
+                tbody.appendChild(tr);
+            });
         }
 
         function toggleCustomersTable() {
@@ -9787,6 +10414,7 @@ ALTER TABLE public.sh_public_orders ADD COLUMN IF NOT EXISTS pickup_lng double p
             if (id === 'orders-view') loadOrdersTable();
             if (id === 'drivers-view') loadDriversTable();
             if (id === 'active-orders-view') loadActiveOrdersView();
+            if (id === 'completed-archive-view') loadCompletedArchive();
             if (id === 'customers-view') loadCustomersTable();
             if (id === 'hiring-view') loadHiringRequests();
             if (id === 'system-staff-view') { loadSystemLogs(); loadStaffList(); }
