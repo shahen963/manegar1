@@ -457,6 +457,11 @@
             <span id="badge-hiring" class="nav-badge">0</span>
         </div>
         <div class="nav-link" data-perm="news-points-view" onclick="switchView('news-points-view')"><i class="fas fa-bullhorn"></i> الأخبار والنقاط</div>
+        <!-- [WASSAYNI-NAV] رابط إعدادات خدمة وصيني -->
+        <div class="nav-link" data-perm="wassayni-settings-view" onclick="switchView('wassayni-settings-view')" style="background:rgba(46,204,113,0.08); border:1px solid rgba(46,204,113,0.3); color:#2ecc71; font-weight:bold;">
+            <i class="fas fa-paper-plane"></i> إعدادات وصيني 🦅
+        </div>
+        <!-- [END-WASSAYNI-NAV] -->
         <div class="nav-link" data-perm="contact-settings-view" onclick="switchView('contact-settings-view')"><i class="fas fa-address-book"></i> التواصل مع الإدارة</div>
         <div class="nav-link" data-perm="financing-limit-view" onclick="switchView('financing-limit-view')"><i class="fas fa-hand-holding-usd"></i> حد التمويل</div>
         <div class="nav-link" data-perm="financing-view" onclick="switchView('financing-view')"><i class="fas fa-file-invoice-dollar"></i> التمويل</div>
@@ -1098,6 +1103,94 @@
         </div>
 
         </div>
+
+        <!-- ===== [WASSAYNI-SETTINGS-VIEW] قسم إعدادات خدمة وصيني ===== -->
+        <div id="wassayni-settings-view" class="view-section">
+            <h2 style="color:#2ecc71; display:flex; align-items:center; gap:10px;">
+                <i class="fas fa-paper-plane"></i> إعدادات خدمة وصيني 🦅
+            </h2>
+            <p style="color:#aaa; font-size:12px; margin-bottom:20px;">
+                تحكم كامل بأسعار خدمة وصيني — كل تغيير يُطبَّق فوراً على تطبيق العميل.
+            </p>
+
+            <div class="stats-grid">
+
+                <!-- بطاقة السعر الأساسي -->
+                <div class="stat-card" style="border:2px solid #2ecc71; background:rgba(46,204,113,0.05);">
+                    <h4 style="color:#2ecc71; display:flex; align-items:center; gap:8px; margin-bottom:16px;">
+                        <i class="fas fa-tag"></i> السعر الأساسي لخدمة وصيني
+                    </h4>
+                    <div class="form-group">
+                        <label>💰 السعر الأساسي (مكان واحد) — ل.س</label>
+                        <input type="number" id="wassayni-base-price" placeholder="مثلاً 25000" min="0" step="500">
+                        <small style="color:#aaa; font-size:11px; display:block; margin-top:4px;">هذا السعر يشمل زيارة مكان واحد فقط</small>
+                    </div>
+                    <div class="form-group">
+                        <label>➕ سعر كل مكان إضافي — ل.س</label>
+                        <input type="number" id="wassayni-extra-price" placeholder="مثلاً 10000" min="0" step="500">
+                        <small style="color:#aaa; font-size:11px; display:block; margin-top:4px;">يُضاف لكل مكان بعد الأول تلقائياً</small>
+                    </div>
+                    <button class="btn btn-gold" onclick="saveWassayniPrices()" style="width:100%; margin-top:8px;">
+                        <i class="fas fa-save"></i> حفظ أسعار وصيني
+                    </button>
+                </div>
+
+                <!-- بطاقة معاينة حساب الأسعار -->
+                <div class="stat-card" style="border:1px solid rgba(212,175,55,0.3);">
+                    <h4 style="color:var(--gold); display:flex; align-items:center; gap:8px; margin-bottom:16px;">
+                        <i class="fas fa-calculator"></i> معاينة حساب الأسعار
+                    </h4>
+                    <div id="wassayni-price-preview" style="direction:rtl;">
+                        <div style="display:flex; justify-content:space-between; padding:8px; background:rgba(46,204,113,0.1); border-radius:8px; margin-bottom:6px; border-right:3px solid #2ecc71;">
+                            <span style="font-size:12px; color:#ccc;">مكان واحد</span>
+                            <span id="prev-1-loc" style="font-weight:bold; color:#2ecc71; font-size:13px;">25,000 ل.س</span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; padding:8px; background:rgba(212,175,55,0.1); border-radius:8px; margin-bottom:6px; border-right:3px solid var(--gold);">
+                            <span style="font-size:12px; color:#ccc;">مكانان</span>
+                            <span id="prev-2-loc" style="font-weight:bold; color:var(--gold); font-size:13px;">35,000 ل.س</span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; padding:8px; background:rgba(52,152,219,0.1); border-radius:8px; margin-bottom:6px; border-right:3px solid #3498db;">
+                            <span style="font-size:12px; color:#ccc;">3 أماكن</span>
+                            <span id="prev-3-loc" style="font-weight:bold; color:#3498db; font-size:13px;">45,000 ل.س</span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; padding:8px; background:rgba(155,89,182,0.1); border-radius:8px; margin-bottom:6px; border-right:3px solid #9b59b6;">
+                            <span style="font-size:12px; color:#ccc;">4 أماكن</span>
+                            <span id="prev-4-loc" style="font-weight:bold; color:#9b59b6; font-size:13px;">55,000 ل.س</span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; padding:8px; background:rgba(231,76,60,0.1); border-radius:8px; border-right:3px solid #e74c3c;">
+                            <span style="font-size:12px; color:#ccc;">5 أماكن</span>
+                            <span id="prev-5-loc" style="font-weight:bold; color:#e74c3c; font-size:13px;">65,000 ل.س</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- بطاقة إحصائيات طلبات وصيني -->
+                <div class="stat-card" style="grid-column: span 2; border:1px solid rgba(46,204,113,0.2);">
+                    <h4 style="color:#2ecc71; display:flex; align-items:center; gap:8px; margin-bottom:16px;">
+                        <i class="fas fa-chart-bar"></i> إحصائيات طلبات وصيني
+                    </h4>
+                    <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:12px;" id="wassayni-stats-grid">
+                        <div style="background:rgba(0,0,0,0.3); border-radius:10px; padding:12px; text-align:center; border:1px solid rgba(46,204,113,0.2);">
+                            <div id="wassayni-stat-total" style="font-size:24px; font-weight:bold; color:#2ecc71;">-</div>
+                            <div style="font-size:11px; color:#aaa; margin-top:4px;">إجمالي الطلبات</div>
+                        </div>
+                        <div style="background:rgba(0,0,0,0.3); border-radius:10px; padding:12px; text-align:center; border:1px solid rgba(212,175,55,0.2);">
+                            <div id="wassayni-stat-today" style="font-size:24px; font-weight:bold; color:var(--gold);">-</div>
+                            <div style="font-size:11px; color:#aaa; margin-top:4px;">طلبات اليوم</div>
+                        </div>
+                        <div style="background:rgba(0,0,0,0.3); border-radius:10px; padding:12px; text-align:center; border:1px solid rgba(52,152,219,0.2);">
+                            <div id="wassayni-stat-revenue" style="font-size:18px; font-weight:bold; color:#3498db;">-</div>
+                            <div style="font-size:11px; color:#aaa; margin-top:4px;">إيرادات التوصيل</div>
+                        </div>
+                    </div>
+                    <button class="btn" onclick="loadWassayniStats()" style="margin-top:12px; background:rgba(46,204,113,0.1); border:1px solid #2ecc71; color:#2ecc71; padding:8px 16px; border-radius:8px; cursor:pointer; font-size:12px;">
+                        <i class="fas fa-sync-alt"></i> تحديث الإحصائيات
+                    </button>
+                </div>
+
+            </div>
+        </div>
+        <!-- ===== [END-WASSAYNI-SETTINGS-VIEW] ===== -->
 
         <!-- ===== قسم التواصل مع الإدارة ===== -->
         <div id="contact-settings-view" class="view-section">
@@ -2745,7 +2838,7 @@
         }
 
         // الصفحات التي تُفتح بوضع Full Screen
-        const _FULLSCREEN_VIEWS = ["news-points-view", "contact-settings-view", "financing-view", "financing-limit-view", "general-manager-view", "charge-partners-view", "system-staff-view", "discount-view", "hiring-view"];
+        const _FULLSCREEN_VIEWS = ["news-points-view", "wassayni-settings-view", "contact-settings-view", "financing-view", "financing-limit-view", "general-manager-view", "charge-partners-view", "system-staff-view", "discount-view", "hiring-view"];
 
         function switchView(id) {
             if(!checkPermission(id)) return;
@@ -2779,6 +2872,9 @@
             if(id === 'completed-archive-view') loadCompletedArchive();
             if(id === 'res-view') loadRestaurants();
             if(id === 'news-points-view') loadNewsAndPoints();
+            // [WASSAYNI-SWITCH] تحميل إعدادات وصيني عند فتح القسم
+            if(id === 'wassayni-settings-view') loadWassayniSettings();
+            // [END-WASSAYNI-SWITCH]
             if(id === 'discount-view') loadCoupons();
             if(id === 'customers-view') loadCustomersTable();
             if(id === 'orders-view') loadOrdersTable(); 
@@ -5974,6 +6070,76 @@
                 document.getElementById('bonus-points').value = config.bonus_points || 5;
             }
         }
+
+        // ===== [WASSAYNI-SETTINGS-JS] دوال إعدادات خدمة وصيني =====
+        async function loadWassayniSettings() {
+            const { data: config, error } = await _client.from('app_config').select('wassayni_base_price, wassayni_extra_price').eq('id', 1).single();
+            const basePrice = (!error && config && config.wassayni_base_price) ? config.wassayni_base_price : 25000;
+            const extraPrice = (!error && config && config.wassayni_extra_price) ? config.wassayni_extra_price : 10000;
+            document.getElementById('wassayni-base-price').value = basePrice;
+            document.getElementById('wassayni-extra-price').value = extraPrice;
+            _updateWassayniPreview(basePrice, extraPrice);
+            loadWassayniStats();
+        }
+
+        function _updateWassayniPreview(base, extra) {
+            const fmt = n => Number(n).toLocaleString() + ' ل.س';
+            const el1 = document.getElementById('prev-1-loc');
+            const el2 = document.getElementById('prev-2-loc');
+            const el3 = document.getElementById('prev-3-loc');
+            const el4 = document.getElementById('prev-4-loc');
+            const el5 = document.getElementById('prev-5-loc');
+            if(el1) el1.innerText = fmt(base);
+            if(el2) el2.innerText = fmt(Number(base) + Number(extra));
+            if(el3) el3.innerText = fmt(Number(base) + Number(extra) * 2);
+            if(el4) el4.innerText = fmt(Number(base) + Number(extra) * 3);
+            if(el5) el5.innerText = fmt(Number(base) + Number(extra) * 4);
+        }
+
+        async function saveWassayniPrices() {
+            const basePrice = parseInt(document.getElementById('wassayni-base-price').value) || 25000;
+            const extraPrice = parseInt(document.getElementById('wassayni-extra-price').value) || 10000;
+            const { error } = await _client.from('app_config').upsert({
+                id: 1,
+                wassayni_base_price: basePrice,
+                wassayni_extra_price: extraPrice
+            });
+            if(!error) {
+                _updateWassayniPreview(basePrice, extraPrice);
+                await addSystemLog(`تحديث أسعار وصيني: أساسي=${basePrice} ل.س — إضافي=${extraPrice} ل.س`);
+                showNotify('✅ تم حفظ أسعار وصيني بنجاح — سيُطبَّق فوراً على تطبيق العميل');
+            } else {
+                showNotify('❌ خطأ في الحفظ: ' + error.message);
+            }
+        }
+
+        async function loadWassayniStats() {
+            try {
+                const today = new Date().toISOString().split('T')[0];
+                const { data: allOrders } = await _client.from('sh_public_orders')
+                    .select('id, delivery_price, created_at')
+                    .eq('res_type', 'wassayni');
+                const total = allOrders ? allOrders.length : 0;
+                const todayOrders = allOrders ? allOrders.filter(o => o.created_at && o.created_at.startsWith(today)).length : 0;
+                const revenue = allOrders ? allOrders.reduce((sum, o) => sum + (Number(o.delivery_price) || 0), 0) : 0;
+                const stEl = document.getElementById('wassayni-stat-total');
+                const sdEl = document.getElementById('wassayni-stat-today');
+                const srEl = document.getElementById('wassayni-stat-revenue');
+                if(stEl) stEl.innerText = total;
+                if(sdEl) sdEl.innerText = todayOrders;
+                if(srEl) srEl.innerText = revenue.toLocaleString() + ' ل.س';
+            } catch(e) { /* تجاهل خطأ الإحصائيات */ }
+        }
+
+        // تحديث المعاينة لحظياً عند تغيير الأسعار
+        document.addEventListener('input', function(e) {
+            if(e.target.id === 'wassayni-base-price' || e.target.id === 'wassayni-extra-price') {
+                const base = parseInt(document.getElementById('wassayni-base-price')?.value) || 0;
+                const extra = parseInt(document.getElementById('wassayni-extra-price')?.value) || 0;
+                _updateWassayniPreview(base, extra);
+            }
+        });
+        // ===== [END-WASSAYNI-SETTINGS-JS] =====
 
         async function updateNews() {
             const text = document.getElementById('news-text-admin').value;
@@ -10293,6 +10459,10 @@ ALTER TABLE public.app_config ADD COLUMN IF NOT EXISTS fin_target_orders integer
 ALTER TABLE public.app_config ADD COLUMN IF NOT EXISTS fin_target_status text DEFAULT 'inactive';
 ALTER TABLE public.app_config ADD COLUMN IF NOT EXISTS fin_target_type text DEFAULT 'دبابة كهربائية';
 ALTER TABLE public.app_config ADD COLUMN IF NOT EXISTS fin_target_message text DEFAULT '';
+-- ===== [WASSAYNI-SQL] أعمدة إعدادات خدمة وصيني =====
+ALTER TABLE public.app_config ADD COLUMN IF NOT EXISTS wassayni_base_price integer DEFAULT 25000;
+ALTER TABLE public.app_config ADD COLUMN IF NOT EXISTS wassayni_extra_price integer DEFAULT 10000;
+-- ===== [END-WASSAYNI-SQL] =====
 -- ===== جدول سجل الدوام (attendance_logs) =====
 CREATE TABLE IF NOT EXISTS public.attendance_logs (
     id bigserial PRIMARY KEY,
