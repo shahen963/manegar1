@@ -1,23 +1,23 @@
 <!DOCTYPE html>
-<!-- saved from url=(0062)file:///C:/Users/yahya/Downloads/index_8.html#news-points-view -->
-<html lang="ar" dir="rtl"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- [SEC-PATCH-16] رؤوس أمان إضافية للوحة الإدارة -->
     <meta http-equiv="X-Content-Type-Options" content="nosniff">
     <meta name="referrer" content="no-referrer">
     <title>إدارة شاهين إكسبريس | م. يحيى عزام القاضي</title>
     
-    <link rel="stylesheet" href="./إدارة شاهين إكسبريس _ م. يحيى عزام القاضي_files/all.min.css">
-    <link rel="stylesheet" href="./إدارة شاهين إكسبريس _ م. يحيى عزام القاضي_files/leaflet.css">
-    <script src="./إدارة شاهين إكسبريس _ م. يحيى عزام القاضي_files/leaflet.js.تنزيل"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <!-- ===== Leaflet Routing Machine للمسارات الحقيقية ===== -->
-    <link rel="stylesheet" href="./إدارة شاهين إكسبريس _ م. يحيى عزام القاضي_files/leaflet-routing-machine.css">
-    <script src="./إدارة شاهين إكسبريس _ م. يحيى عزام القاضي_files/leaflet-routing-machine.min.js.تنزيل"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
+    <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.min.js"></script>
     <!-- ===== نهاية Routing Machine ===== -->
-    <script src="./إدارة شاهين إكسبريس _ م. يحيى عزام القاضي_files/chart.js.تنزيل"></script>
-    <script src="./إدارة شاهين إكسبريس _ م. يحيى عزام القاضي_files/supabase-js@2"></script>
-    <script src="./إدارة شاهين إكسبريس _ م. يحيى عزام القاضي_files/xlsx.full.min.js.تنزيل"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
     <style>
         :root {
@@ -380,17 +380,19 @@
         /* ===== نهاية Full Screen Mode ===== */
 </style>
 </head>
-<body class="fs-mode">
+<body>
 
-    <div id="login-screen" style="display: none;">
+    <div id="login-screen">
         <div class="login-box">
-            <img src="./إدارة شاهين إكسبريس _ م. يحيى عزام القاضي_files/Whats-App-Image-2026-04-10-at-6-22-30-PM-t7edrz.jpg" style="width: 120px; border-radius: 50%; border: 3px solid var(--gold); margin-bottom: 15px; box-shadow: 0 0 20px var(--gold);">
+            <img src="https://i.postimg.cc/QxzPkmPf/Whats-App-Image-2026-04-10-at-6-22-30-PM-t7edrz.jpg" style="width: 120px; border-radius: 50%; border: 3px solid var(--gold); margin-bottom: 15px; box-shadow: 0 0 20px var(--gold);">
             <h2 style="color: var(--gold); margin-bottom: 5px; letter-spacing: 1px;">شركة شاهين الصقور</h2>
             <p style="color: white; opacity: 0.7; margin-bottom: 30px; font-size: 14px;">بوابة دخول الموظفين المعتمدين</p>
             
             <div class="form-group" style="text-align: right;">
                 <label style="color: var(--gold); font-size: 13px; margin-bottom: 8px; display: block;">اختر اسم الموظف:</label>
-                <select id="login-staff-select" style="width: 100%; padding: 12px; border-radius: 10px; background: var(--p-dark); color: white; border: 1px solid var(--glass);"><option value="" disabled="" selected="">اختر اسمك من قائمة الصقور</option><option value="يحيى">مهندس يحيى عزام القاضي</option></select>
+                <select id="login-staff-select" style="width: 100%; padding: 12px; border-radius: 10px; background: var(--p-dark); color: white; border: 1px solid var(--glass);">
+                    <option value="" disabled selected>جاري تحميل قائمة الصقور...</option>
+                </select>
             </div>
 
             <div class="form-group" style="text-align: right; margin-top: 20px;">
@@ -399,7 +401,7 @@
             </div>
 
             <!-- ===== [CITY-LOGIN] اختيار المحافظة عند الدخول ===== -->
-            <div id="login-city-group" class="form-group" style="text-align: right; margin-top: 15px; display: block;">
+            <div id="login-city-group" class="form-group" style="text-align:right; margin-top:15px; display:none;">
                 <label style="color:var(--gold); font-size:13px; margin-bottom:8px; display:block;"><i class="fas fa-map-marker-alt"></i> المحافظة:</label>
                 <select id="login-city-select" style="width:100%; padding:12px; border-radius:10px; background:var(--p-dark); color:white; border:1px solid var(--gold);">
                     <option value="all">📍 جميع المحافظات</option>
@@ -418,135 +420,135 @@
         <p style="margin-top: 20px; font-size: 10px; opacity: 0.4;">جميع الحقوق محفوظة لشركة شاهين الصقور 2026 ©</p>
     </div>
 
-    <div id="data-loader-bar" style="width: 100%;"></div>
+    <div id="data-loader-bar"></div>
     <div id="data-status-text">متصل بنظام إدارة شاهين...</div>
-    <div id="site-notify" class="site-notification"><i class="fas fa-bell"></i> <span id="notify-msg">تم إرسال الخبر إلى تطبيق العميل بنجاح 🦅</span></div>
+    <div id="site-notify" class="site-notification"><i class="fas fa-bell"></i> <span id="notify-msg"></span></div>
 
-    <div class="sidebar fs-hidden">
+    <div class="sidebar">
         <div class="sidebar-header">
-            <img src="./إدارة شاهين إكسبريس _ م. يحيى عزام القاضي_files/Whats-App-Image-2026-04-10-at-6-22-30-PM-t7edrz.jpg" alt="Logo">
+            <img src="https://i.postimg.cc/QxzPkmPf/Whats-App-Image-2026-04-10-at-6-22-30-PM-t7edrz.jpg" alt="Logo">
             <h4 style="color: var(--gold); font-size: 0.9rem;">شاهين إكسبريس</h4>
         </div>
-        <div class="nav-link" data-perm="finance-view" onclick="switchView(&#39;finance-view&#39;)"><i class="fas fa-chart-line"></i> التقارير المالية</div>
-        <div class="nav-link" data-perm="settlement-view" onclick="switchView(&#39;settlement-view&#39;)"><i class="fas fa-handholding-usd"></i> تسوية المناديب</div>
-        <div class="nav-link" data-perm="res-view" onclick="switchView(&#39;res-view&#39;)"><i class="fas fa-utensils"></i> إدارة المطاعم</div>
-        <div class="nav-link" data-perm="customers-view" onclick="switchView(&#39;customers-view&#39;)"><i class="fas fa-users"></i> سجلات العملاء</div>
-        <div class="nav-link" data-perm="orders-view" onclick="switchView(&#39;orders-view&#39;)" style="display: none;"><i class="fas fa-shopping-cart"></i> إدارة الطلبات</div>
-        <div class="nav-link" data-perm="res-partnership-view" onclick="switchView(&#39;res-partnership-view&#39;)"><i class="fas fa-handshake"></i> شراكة المطاعم</div>
-        <div class="nav-link" data-perm="pharma-partnership-view" onclick="switchView(&#39;pharma-partnership-view&#39;)"><i class="fas fa-clinic-medical"></i> شراكة الصيدليات</div>
-        <div class="nav-link" data-perm="sweets-partnership-view" onclick="switchView(&#39;sweets-partnership-view&#39;)"><i class="fas fa-cookie-bite"></i> شراكة الحلويات والورود</div>
-        <div class="nav-link" data-perm="pharma-view" onclick="switchView(&#39;pharma-view&#39;)"><i class="fas fa-file-medical"></i> الصيدليات المناوبة</div>
-        <div class="nav-link" data-perm="tracking-view" onclick="switchView(&#39;tracking-view&#39;)"><i class="fas fa-map-marker-alt"></i> تتبع الصقور</div>
+        <div class="nav-link active" data-perm="finance-view" onclick="switchView('finance-view')"><i class="fas fa-chart-line"></i> التقارير المالية</div>
+        <div class="nav-link" data-perm="settlement-view" onclick="switchView('settlement-view')"><i class="fas fa-handholding-usd"></i> تسوية المناديب</div>
+        <div class="nav-link" data-perm="res-view" onclick="switchView('res-view')"><i class="fas fa-utensils"></i> إدارة المطاعم</div>
+        <div class="nav-link" data-perm="customers-view" onclick="switchView('customers-view')"><i class="fas fa-users"></i> سجلات العملاء</div>
+        <div class="nav-link" data-perm="orders-view" onclick="switchView('orders-view')" style="display: none;"><i class="fas fa-shopping-cart"></i> إدارة الطلبات</div>
+        <div class="nav-link" data-perm="res-partnership-view" onclick="switchView('res-partnership-view')"><i class="fas fa-handshake"></i> شراكة المطاعم</div>
+        <div class="nav-link" data-perm="pharma-partnership-view" onclick="switchView('pharma-partnership-view')"><i class="fas fa-clinic-medical"></i> شراكة الصيدليات</div>
+        <div class="nav-link" data-perm="sweets-partnership-view" onclick="switchView('sweets-partnership-view')"><i class="fas fa-cookie-bite"></i> شراكة الحلويات والورود</div>
+        <div class="nav-link" data-perm="pharma-view" onclick="switchView('pharma-view')"><i class="fas fa-file-medical"></i> الصيدليات المناوبة</div>
+        <div class="nav-link" data-perm="tracking-view" onclick="switchView('tracking-view')"><i class="fas fa-map-marker-alt"></i> تتبع الصقور</div>
         <!-- ===== الطلبات النشطة للمناديب ===== -->
-        <div class="nav-link" data-perm="active-orders-view" onclick="switchView(&#39;active-orders-view&#39;)">
+        <div class="nav-link" data-perm="active-orders-view" onclick="switchView('active-orders-view')">
             <i class="fas fa-bolt"></i> الطلبات النشطة
             <span id="badge-active-orders" class="nav-badge" style="display:none;">0</span>
         </div>
         <!-- ===== نهاية الطلبات النشطة ===== -->
         <!-- ===== أرشيف الطلبات المسلمة ===== -->
-        <div class="nav-link" data-perm="completed-archive-view" onclick="switchView(&#39;completed-archive-view&#39;)">
+        <div class="nav-link" data-perm="completed-archive-view" onclick="switchView('completed-archive-view')">
             <i class="fas fa-archive"></i> أرشيف التسليمات
         </div>
         <!-- ===== نهاية أرشيف الطلبات ===== -->
         <!-- ===== قسم تتبع الشيفتات الجديد ===== -->
-        <div class="nav-link" data-perm="shift-tracking-view" onclick="switchView(&#39;shift-tracking-view&#39;)"><i class="fas fa-user-clock"></i> تتبع الشيفتات</div>
+        <div class="nav-link" data-perm="shift-tracking-view" onclick="switchView('shift-tracking-view')"><i class="fas fa-user-clock"></i> تتبع الشيفتات</div>
         <!-- ===== نهاية قسم تتبع الشيفتات ===== -->
-        <div class="nav-link" data-perm="drivers-view" onclick="switchView(&#39;drivers-view&#39;)"><i class="fas fa-motorcycle"></i> ملفات المناديب</div>
-        <div class="nav-link" data-perm="discount-view" onclick="switchView(&#39;discount-view&#39;)"><i class="fas fa-percentage"></i> نظام الخصومات</div>
-        <div class="nav-link" data-perm="hiring-view" onclick="switchView(&#39;hiring-view&#39;)">
+        <div class="nav-link" data-perm="drivers-view" onclick="switchView('drivers-view')"><i class="fas fa-motorcycle"></i> ملفات المناديب</div>
+        <div class="nav-link" data-perm="discount-view" onclick="switchView('discount-view')"><i class="fas fa-percentage"></i> نظام الخصومات</div>
+        <div class="nav-link" data-perm="hiring-view" onclick="switchView('hiring-view')">
             <i class="fas fa-user-plus"></i> نظام التوظيف
-            <span id="badge-hiring" class="nav-badge" style="display: none;">0</span>
+            <span id="badge-hiring" class="nav-badge">0</span>
         </div>
-        <div class="nav-link active" data-perm="news-points-view" onclick="switchView(&#39;news-points-view&#39;)"><i class="fas fa-bullhorn"></i> الأخبار والنقاط</div>
+        <div class="nav-link" data-perm="news-points-view" onclick="switchView('news-points-view')"><i class="fas fa-bullhorn"></i> الأخبار والنقاط</div>
         <!-- [WASSAYNI-NAV] رابط إعدادات خدمة وصيني -->
-        <div class="nav-link" data-perm="wassayni-settings-view" onclick="switchView(&#39;wassayni-settings-view&#39;)" style="background:rgba(46,204,113,0.08); border:1px solid rgba(46,204,113,0.3); color:#2ecc71; font-weight:bold;">
+        <div class="nav-link" data-perm="wassayni-settings-view" onclick="switchView('wassayni-settings-view')" style="background:rgba(46,204,113,0.08); border:1px solid rgba(46,204,113,0.3); color:#2ecc71; font-weight:bold;">
             <i class="fas fa-paper-plane"></i> إعدادات وصيني 🦅
         </div>
         <!-- [END-WASSAYNI-NAV] -->
-        <div class="nav-link" data-perm="contact-settings-view" onclick="switchView(&#39;contact-settings-view&#39;)"><i class="fas fa-address-book"></i> التواصل مع الإدارة</div>
-        <div class="nav-link" data-perm="financing-limit-view" onclick="switchView(&#39;financing-limit-view&#39;)"><i class="fas fa-hand-holding-usd"></i> حد التمويل</div>
-        <div class="nav-link" data-perm="financing-view" onclick="switchView(&#39;financing-view&#39;)"><i class="fas fa-file-invoice-dollar"></i> التمويل</div>
-        <div class="nav-link" data-perm="general-manager-view" onclick="switchView(&#39;general-manager-view&#39;)" style="border-top:2px solid var(--gold);color:var(--gold);background:rgba(212,175,55,0.1);font-weight:bold;position:relative;">
+        <div class="nav-link" data-perm="contact-settings-view" onclick="switchView('contact-settings-view')"><i class="fas fa-address-book"></i> التواصل مع الإدارة</div>
+        <div class="nav-link" data-perm="financing-limit-view" onclick="switchView('financing-limit-view')"><i class="fas fa-hand-holding-usd"></i> حد التمويل</div>
+        <div class="nav-link" data-perm="financing-view" onclick="switchView('financing-view')"><i class="fas fa-file-invoice-dollar"></i> التمويل</div>
+        <div class="nav-link" data-perm="general-manager-view" onclick="switchView('general-manager-view')" style="border-top:2px solid var(--gold);color:var(--gold);background:rgba(212,175,55,0.1);font-weight:bold;position:relative;">
             <i class="fas fa-crown"></i> المدير العام
             <span id="badge-gm" class="nav-badge" style="display:none;">0</span>
         </div>
-        <div class="nav-link" data-perm="charge-partners-view" onclick="switchView(&#39;charge-partners-view&#39;)" style="background:rgba(46,204,113,0.08); border-top:2px solid #2ecc71; color:#2ecc71; font-weight:bold;">
+        <div class="nav-link" data-perm="charge-partners-view" onclick="switchView('charge-partners-view')" style="background:rgba(46,204,113,0.08); border-top:2px solid #2ecc71; color:#2ecc71; font-weight:bold;">
             <i class="fas fa-charging-station"></i> نقاط الشحن والشركاء
         </div>
-        <div class="nav-link" data-perm="system-staff-view" onclick="switchView(&#39;system-staff-view&#39;)" style="color:var(--gold);"><i class="fas fa-user-shield"></i> إدارة النظام</div>
+        <div class="nav-link" data-perm="system-staff-view" onclick="switchView('system-staff-view')" style="color:var(--gold);"><i class="fas fa-user-shield"></i> إدارة النظام</div>
         <div class="nav-link" onclick="processLogout()" style="margin-top:auto; color:var(--danger); border-top: 1px solid var(--glass);"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</div>
     </div>
 
-    <div class="main-content fs-expanded" id="main-content-area">
+    <div class="main-content" id="main-content-area">
     <!-- ===== شريط التنقل في وضع Full Screen ===== -->
     <div id="fs-topbar">
         <button class="fs-back" onclick="exitFullScreen()">
             <i class="fas fa-arrow-right"></i> رجوع
         </button>
-        <span class="fs-title" id="fs-page-title">الأخبار والنقاط</span>
-        <span style="font-size:11px; opacity:0.5;" id="fs-staff-name">مهندس يحيى عزام القاضي</span>
+        <span class="fs-title" id="fs-page-title">الصفحة</span>
+        <span style="font-size:11px; opacity:0.5;" id="fs-staff-name"></span>
     </div>
     <!-- ===== نهاية شريط Full Screen ===== -->
 
-        <img src="./إدارة شاهين إكسبريس _ م. يحيى عزام القاضي_files/Whats-App-Image-2026-04-10-at-6-22-30-PM-t7edrz.jpg" class="bg-watermark" alt="Background Logo">
+        <img src="https://i.postimg.cc/QxzPkmPf/Whats-App-Image-2026-04-10-at-6-22-30-PM-t7edrz.jpg" class="bg-watermark" alt="Background Logo">
 
         <div class="top-nav">
-            <h3 id="view-title">الأخبار والنقاط</h3>
+            <h3 id="view-title">التقارير المالية</h3>
             <div id="admin-info" style="display:flex; align-items:center; gap:20px; font-weight: bold; color: var(--gold);">
                 <div id="admin-orders-alert-btn" onclick="openStaffOrdersModal()">
                     <i class="fas fa-bell"></i> الصندوق الوارد
                     <span id="staff-alert-count" class="alert-badge">0</span>
                 </div>
                 <!-- ===== [CITY-LABEL] بادج المحافظة الحالية ===== -->
-                <div id="current-staff-city-label" style="background:rgba(212,175,55,0.15); border:1px solid var(--gold); padding:4px 12px; border-radius:20px; font-size:12px; color:var(--gold);">📍 جميع المحافظات</div>
+                <div id="current-staff-city-label" style="background:rgba(212,175,55,0.15); border:1px solid var(--gold); padding:4px 12px; border-radius:20px; font-size:12px; color:var(--gold);"></div>
                 <!-- ===== نهاية [CITY-LABEL] ===== -->
-                <div><span id="current-staff-name" style="color:var(--gold)">مهندس يحيى عزام القاضي</span> | <span style="color:white">الإدارة:</span> مهندس يحيى عزام القاضي | <span id="clock" style="color:white">03:06</span></div>
+                <div><span id="current-staff-name" style="color:var(--gold)">يحيى</span> | <span style="color:white">الإدارة:</span> مهندس يحيى عزام القاضي | <span id="clock" style="color:white">00:00</span></div>
             </div>
         </div>
 
-        <div id="finance-view" class="view-section">
+        <div id="finance-view" class="view-section active">
             <div class="stats-grid">
                 <!-- صافي تراكم أرباح الشركة = مجموع company_share - مجموع discounts -->
                 <div class="stat-card" style="border:1px solid #2ecc71; background:rgba(46,204,113,0.06); grid-column:span 2;">
                     <i class="fas fa-chart-line" style="color:#2ecc71;"></i>
-                    <h3 id="total-net-profit" style="color:#2ecc71; font-weight:900; font-size:22px;">0 ل.س</h3>
+                    <h3 id="total-net-profit" style="color:#2ecc71; font-weight:900; font-size:22px;">0</h3>
                     <p style="color:#2ecc71; font-weight:bold;">صافي تراكم أرباح الشركة</p>
                     <small style="color:#888; font-size:10px;">= إجمالي حصة الشركة − إجمالي الخصومات</small>
                 </div>
                 <!-- إجمالي حصة الشركة من الطلبات (قبل الخصم) -->
                 <div class="stat-card" style="border:1px solid #3498db; background:rgba(52,152,219,0.06);">
                     <i class="fas fa-money-bill-wave" style="color:#3498db;"></i>
-                    <h3 id="fin-gross-company-share" style="color:#3498db; font-weight:bold;">0 ل.س</h3>
+                    <h3 id="fin-gross-company-share" style="color:#3498db; font-weight:bold;">0</h3>
                     <p style="color:#3498db;">إجمالي حصة الشركة (قبل الخصم)</p>
                 </div>
                 <!-- إجمالي الخصومات — أحمر لأنها تقليل من الأرباح -->
                 <div class="stat-card" style="border:1px solid var(--danger); background:rgba(231,76,60,0.06);">
                     <i class="fas fa-tag" style="color:var(--danger);"></i>
-                    <h3 id="fin-total-discounts" style="color:var(--danger); font-weight:bold;">0 ل.س</h3>
+                    <h3 id="fin-total-discounts" style="color:var(--danger); font-weight:bold;">0</h3>
                     <p style="color:var(--danger);">إجمالي الخصومات (تخفيض من الأرباح)</p>
                 </div>
                 <!-- أرصدة المناديب -->
                 <div class="stat-card" style="border:1px solid #2ecc71;">
                     <i class="fas fa-wallet" style="color:#2ecc71;"></i>
-                    <h3 id="total-company-debt" class="profit-green">15,000 ل.س</h3>
+                    <h3 id="total-company-debt" class="profit-green">0</h3>
                     <p>إجمالي أرصدة المناديب</p>
                 </div>
                 <!-- عدد المناديب -->
                 <div class="stat-card">
                     <i class="fas fa-id-badge"></i>
-                    <h3 id="total-drivers-count">1</h3>
+                    <h3 id="total-drivers-count">0</h3>
                     <p>عدد الصقور</p>
                 </div>
                 <!-- إجمالي المشحون -->
                 <div class="stat-card">
                     <i class="fas fa-bolt" style="color:#2ecc71;"></i>
-                    <h3 id="fin-total-charged" style="color:#2ecc71;">100,000 ل.س</h3>
+                    <h3 id="fin-total-charged" style="color:#2ecc71;">0</h3>
                     <p>إجمالي المشحون للمناديب</p>
                 </div>
                 <!-- عدد الطلبات -->
                 <div class="stat-card">
                     <i class="fas fa-shopping-bag" style="color:#3498db;"></i>
-                    <h3 id="fin-total-orders-count" style="color:#3498db;">40</h3>
+                    <h3 id="fin-total-orders-count" style="color:#3498db;">0</h3>
                     <p>إجمالي الطلبات المكتملة</p>
                 </div>
             </div>
@@ -604,12 +606,12 @@
         <div id="res-view" class="view-section">
             <!-- أقسام تصفية المتاجر -->
             <div id="res-category-tabs" style="display:flex; gap:8px; margin-bottom:15px; flex-wrap:wrap;">
-                <button class="btn btn-gold" id="res-cat-all" onclick="filterResByCategory(&#39;all&#39;)" style="padding:5px 12px; font-size:11px;">🔍 الكل</button>
-                <button class="btn" id="res-cat-restaurant" onclick="filterResByCategory(&#39;restaurant&#39;)" style="padding:5px 12px; font-size:11px; background:var(--glass); color:white; border:1px solid var(--gold);">🍽️ المطاعم</button>
-                <button class="btn" id="res-cat-flowers" onclick="filterResByCategory(&#39;flowers&#39;)" style="padding:5px 12px; font-size:11px; background:var(--glass); color:white; border:1px solid var(--gold);">🌸 الورود</button>
-                <button class="btn" id="res-cat-sweets" onclick="filterResByCategory(&#39;sweets&#39;)" style="padding:5px 12px; font-size:11px; background:var(--glass); color:white; border:1px solid var(--gold);">🍬 الحلويات</button>
-                <button class="btn" id="res-cat-gifts" onclick="filterResByCategory(&#39;gifts&#39;)" style="padding:5px 12px; font-size:11px; background:var(--glass); color:white; border:1px solid var(--gold);">🎁 الهدايا</button>
-                <button class="btn" id="res-cat-other" onclick="filterResByCategory(&#39;other&#39;)" style="padding:5px 12px; font-size:11px; background:var(--glass); color:white; border:1px solid var(--gold);">🦅 أخرى</button>
+                <button class="btn btn-gold" id="res-cat-all" onclick="filterResByCategory('all')" style="padding:5px 12px; font-size:11px;">🔍 الكل</button>
+                <button class="btn" id="res-cat-restaurant" onclick="filterResByCategory('restaurant')" style="padding:5px 12px; font-size:11px; background:var(--glass); color:white; border:1px solid var(--gold);">🍽️ المطاعم</button>
+                <button class="btn" id="res-cat-flowers" onclick="filterResByCategory('flowers')" style="padding:5px 12px; font-size:11px; background:var(--glass); color:white; border:1px solid var(--gold);">🌸 الورود</button>
+                <button class="btn" id="res-cat-sweets" onclick="filterResByCategory('sweets')" style="padding:5px 12px; font-size:11px; background:var(--glass); color:white; border:1px solid var(--gold);">🍬 الحلويات</button>
+                <button class="btn" id="res-cat-gifts" onclick="filterResByCategory('gifts')" style="padding:5px 12px; font-size:11px; background:var(--glass); color:white; border:1px solid var(--gold);">🎁 الهدايا</button>
+                <button class="btn" id="res-cat-other" onclick="filterResByCategory('other')" style="padding:5px 12px; font-size:11px; background:var(--glass); color:white; border:1px solid var(--gold);">🦅 أخرى</button>
             </div>
             <div style="display: flex; justify-content: space-between; margin-bottom: 20px; align-items: center; gap: 15px;">
                 <h2 style="margin:0">المطعم المسجلة</h2>
@@ -617,28 +619,9 @@
                     <i class="fas fa-search"></i>
                     <input type="text" id="res-search-input" placeholder="ابحث عن مطعم..." onkeyup="filterResList()">
                 </div>
-                <button class="btn btn-gold" onclick="openModal(&#39;res-modal&#39;); resetResForm();">إضافة مطعم جديد</button>
+                <button class="btn btn-gold" onclick="openModal('res-modal'); resetResForm();">إضافة مطعم جديد</button>
             </div>
-            <div id="res-list" class="stats-grid"><div class="stat-card">
-                    <div style="position:relative;margin-bottom:6px;">
-                        <img src="https://via.placeholder.com/60" style="width:55px;height:55px;border-radius:50%;border:3px solid #6c3483;object-fit:cover;filter:grayscale(80%);opacity:0.6;">
-                        <span style="position:absolute;top:-4px;right:-4px;background:var(--gold);color:#000;font-size:8px;padding:1px 4px;border-radius:4px;font-weight:bold;">0%</span>
-                    </div>
-                    <h3 style="font-size:12px;margin:3px 0;color:#aaa;">
-                        🍽️ فاتاففغ
-                        <i class="fas fa-lock" style="color:#8e44ad;font-size:10px;margin-right:3px;"></i>
-                    </h3>
-                    <div style="font-size:9px;color:#666;margin-bottom:6px;">0 ل.س | 10:00 ص - 12:00 ص</div>
-                    <div style="margin-bottom:7px;"><span style="background:#6c3483;color:#fff;padding:2px 7px;border-radius:10px;font-size:9px;font-weight:bold;">🔒 مقفول</span></div>
-                    <div style="display:flex;gap:4px;justify-content:center;flex-wrap:wrap;">
-                        
-                        <button onclick="event.stopPropagation(); toggleResLock(&#39;9243632e-0a0c-4821-b00a-4b96df291139&#39;,&#39;فاتاففغ&#39;,true)" style="background:rgba(46,204,113,0.15);border:1px solid #2ecc71;color:#2ecc71;padding:3px 8px;border-radius:6px;font-size:9px;cursor:pointer;font-weight:bold;">
-                            🔓 فتح القفل
-                        </button>
-                        <button onclick="event.stopPropagation(); showResDetails(&#39;9243632e-0a0c-4821-b00a-4b96df291139&#39;)" style="background:rgba(212,175,55,0.15);border:1px solid var(--gold);color:var(--gold);padding:3px 8px;border-radius:6px;font-size:9px;cursor:pointer;">
-                            إدارة
-                        </button>
-                    </div></div></div>
+            <div id="res-list" class="stats-grid"></div>
         </div>
 
         <div id="customers-view" class="view-section">
@@ -654,43 +637,9 @@
                     <thead>
                         <tr><th>الاسم الكامل</th><th>التواصل</th><th>نقاط الشاهين</th><th>تاريخ الانضمام</th><th>الإجراء</th></tr>
                     </thead>
-                    <tbody id="customers-table-body"><tr>
-                    <td>يحيى عرام القاضي </td>
-                    <td><a href="https://wa.me/966546083283" target="_blank" style="color:#25d366;text-decoration:none;"><i class="fab fa-whatsapp"></i> 0546083283</a></td>
-                    <td style="color:var(--gold);font-weight:bold;">0 نقطة</td>
-                    <td>٣٠‏/٥‏/٢٠٢٦</td>
-                    <td>
-                        <button class="btn btn-gold" onclick="openBalanceModal(&#39;21721343-586a-4acf-955b-58809a0f90f0&#39;,&#39;يحيى عرام القاضي &#39;,0)">الملف</button>
-                        <button class="btn btn-gold" style="background:#3498db;color:white;border-color:#3498db;" onclick="openCustomerMessageModal(&#39;21721343-586a-4acf-955b-58809a0f90f0&#39;,&#39;يحيى عرام القاضي &#39;)"><i class="fas fa-envelope"></i></button>
-                        <button class="btn btn-danger" style="padding:6px 10px;font-size:11px;" onclick="deleteCustomer(&#39;21721343-586a-4acf-955b-58809a0f90f0&#39;,&#39;يحيى عرام القاضي &#39;)"><i class="fas fa-trash"></i></button>
-                    </td></tr><tr>
-                    <td>جواد عزام </td>
-                    <td><a href="https://wa.me/966546083283" target="_blank" style="color:#25d366;text-decoration:none;"><i class="fab fa-whatsapp"></i> 0546083283</a></td>
-                    <td style="color:var(--gold);font-weight:bold;">5 نقطة</td>
-                    <td>٢٨‏/٥‏/٢٠٢٦</td>
-                    <td>
-                        <button class="btn btn-gold" onclick="openBalanceModal(&#39;f7f5c1d0-36ed-4a23-88dc-c3a1e5bef5ec&#39;,&#39;جواد عزام &#39;,5)">الملف</button>
-                        <button class="btn btn-gold" style="background:#3498db;color:white;border-color:#3498db;" onclick="openCustomerMessageModal(&#39;f7f5c1d0-36ed-4a23-88dc-c3a1e5bef5ec&#39;,&#39;جواد عزام &#39;)"><i class="fas fa-envelope"></i></button>
-                        <button class="btn btn-danger" style="padding:6px 10px;font-size:11px;" onclick="deleteCustomer(&#39;f7f5c1d0-36ed-4a23-88dc-c3a1e5bef5ec&#39;,&#39;جواد عزام &#39;)"><i class="fas fa-trash"></i></button>
-                    </td></tr><tr>
-                    <td>عزالدين </td>
-                    <td><a href="https://wa.me/966506704929" target="_blank" style="color:#25d366;text-decoration:none;"><i class="fab fa-whatsapp"></i> 0506704929</a></td>
-                    <td style="color:var(--gold);font-weight:bold;">30 نقطة</td>
-                    <td>٢٤‏/٥‏/٢٠٢٦</td>
-                    <td>
-                        <button class="btn btn-gold" onclick="openBalanceModal(&#39;2766e4ac-dd06-472d-b770-c9ef093830dc&#39;,&#39;عزالدين &#39;,30)">الملف</button>
-                        <button class="btn btn-gold" style="background:#3498db;color:white;border-color:#3498db;" onclick="openCustomerMessageModal(&#39;2766e4ac-dd06-472d-b770-c9ef093830dc&#39;,&#39;عزالدين &#39;)"><i class="fas fa-envelope"></i></button>
-                        <button class="btn btn-danger" style="padding:6px 10px;font-size:11px;" onclick="deleteCustomer(&#39;2766e4ac-dd06-472d-b770-c9ef093830dc&#39;,&#39;عزالدين &#39;)"><i class="fas fa-trash"></i></button>
-                    </td></tr><tr>
-                    <td>يحيى</td>
-                    <td><a href="https://wa.me/966546083283" target="_blank" style="color:#25d366;text-decoration:none;"><i class="fab fa-whatsapp"></i> 0546083283</a></td>
-                    <td style="color:var(--gold);font-weight:bold;">75 نقطة</td>
-                    <td>٢٤‏/٥‏/٢٠٢٦</td>
-                    <td>
-                        <button class="btn btn-gold" onclick="openBalanceModal(&#39;79d46432-2eb6-479a-9107-d01589a090b5&#39;,&#39;يحيى&#39;,75)">الملف</button>
-                        <button class="btn btn-gold" style="background:#3498db;color:white;border-color:#3498db;" onclick="openCustomerMessageModal(&#39;79d46432-2eb6-479a-9107-d01589a090b5&#39;,&#39;يحيى&#39;)"><i class="fas fa-envelope"></i></button>
-                        <button class="btn btn-danger" style="padding:6px 10px;font-size:11px;" onclick="deleteCustomer(&#39;79d46432-2eb6-479a-9107-d01589a090b5&#39;,&#39;يحيى&#39;)"><i class="fas fa-trash"></i></button>
-                    </td></tr></tbody>
+                    <tbody id="customers-table-body">
+                        <tr><td colspan="5" style="text-align:center;padding:20px;color:#888;"><i class="fas fa-spinner fa-spin"></i> جاري التحميل...</td></tr>
+                    </tbody>
                 </table>
             </div>
             <div id="customers-hidden-msg" style="display:none;"></div>
@@ -719,7 +668,7 @@
         <div id="res-partnership-view" class="view-section">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                 <h2 style="color:var(--gold); margin:0;">شراكة المطاعم</h2>
-                <button class="btn btn-gold" onclick="openModal(&#39;res-partnership-add-modal&#39;)"><i class="fas fa-handshake"></i> إضافة شريك جديد</button>
+                <button class="btn btn-gold" onclick="openModal('res-partnership-add-modal')"><i class="fas fa-handshake"></i> إضافة شريك جديد</button>
             </div>
             <p>إدارة العقود والنسب المالية للمطاعم الشريكة.</p>
             <table class="custom-table">
@@ -731,7 +680,7 @@
         <div id="pharma-partnership-view" class="view-section">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                 <h2 style="color:var(--gold); margin:0;">شراكة الصيدليات 💊</h2>
-                <button class="btn btn-gold" onclick="openModal(&#39;pharma-partnership-add-modal&#39;)"><i class="fas fa-clinic-medical"></i> إضافة صيدلية شريكة</button>
+                <button class="btn btn-gold" onclick="openModal('pharma-partnership-add-modal')"><i class="fas fa-clinic-medical"></i> إضافة صيدلية شريكة</button>
             </div>
             <p>إدارة الطلبات الطبية والصيدليات المسجلة.</p>
             <table class="custom-table">
@@ -743,7 +692,7 @@
         <div id="sweets-partnership-view" class="view-section">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                 <h2 style="color:var(--gold); margin:0;">شراكة الحلويات والورود 🌸</h2>
-                <button class="btn btn-gold" onclick="openModal(&#39;sweets-partnership-add-modal&#39;)"><i class="fas fa-plus"></i> إضافة شريك حلويات/ورود</button>
+                <button class="btn btn-gold" onclick="openModal('sweets-partnership-add-modal')"><i class="fas fa-plus"></i> إضافة شريك حلويات/ورود</button>
             </div>
             <p>إدارة طلبات الحلويات والهدايا والورود.</p>
 
@@ -754,11 +703,11 @@
                     <input type="text" id="sweets-search-input" placeholder="ابحث عن متجر باسمه..." onkeyup="filterSweetsTable()">
                 </div>
                 <div id="sweets-type-tabs" style="display: flex; gap: 8px; flex-wrap: wrap;">
-                    <button class="btn btn-gold" id="sweets-tab-all" onclick="filterSweetsByType(&#39;all&#39;)" style="font-size: 12px; padding: 8px 14px;">🔍 الكل</button>
-                    <button class="btn" id="sweets-tab-flowers" onclick="filterSweetsByType(&#39;flowers&#39;)" style="font-size: 12px; padding: 8px 14px; background: var(--glass); color: white; border: 1px solid var(--gold);">🌸 ورود</button>
-                    <button class="btn" id="sweets-tab-sweets" onclick="filterSweetsByType(&#39;sweets&#39;)" style="font-size: 12px; padding: 8px 14px; background: var(--glass); color: white; border: 1px solid var(--gold);">🍬 حلويات</button>
-                    <button class="btn" id="sweets-tab-gifts" onclick="filterSweetsByType(&#39;gifts&#39;)" style="font-size: 12px; padding: 8px 14px; background: var(--glass); color: white; border: 1px solid var(--gold);">🎁 هدايا</button>
-                    <button class="btn" id="sweets-tab-other" onclick="filterSweetsByType(&#39;other&#39;)" style="font-size: 12px; padding: 8px 14px; background: var(--glass); color: white; border: 1px solid var(--gold);">🦅 أخرى</button>
+                    <button class="btn btn-gold" id="sweets-tab-all" onclick="filterSweetsByType('all')" style="font-size: 12px; padding: 8px 14px;">🔍 الكل</button>
+                    <button class="btn" id="sweets-tab-flowers" onclick="filterSweetsByType('flowers')" style="font-size: 12px; padding: 8px 14px; background: var(--glass); color: white; border: 1px solid var(--gold);">🌸 ورود</button>
+                    <button class="btn" id="sweets-tab-sweets" onclick="filterSweetsByType('sweets')" style="font-size: 12px; padding: 8px 14px; background: var(--glass); color: white; border: 1px solid var(--gold);">🍬 حلويات</button>
+                    <button class="btn" id="sweets-tab-gifts" onclick="filterSweetsByType('gifts')" style="font-size: 12px; padding: 8px 14px; background: var(--glass); color: white; border: 1px solid var(--gold);">🎁 هدايا</button>
+                    <button class="btn" id="sweets-tab-other" onclick="filterSweetsByType('other')" style="font-size: 12px; padding: 8px 14px; background: var(--glass); color: white; border: 1px solid var(--gold);">🦅 أخرى</button>
                 </div>
             </div>
 
@@ -781,7 +730,7 @@
         <div id="pharma-view" class="view-section">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                 <h2 style="color:var(--gold); margin:0;">إدارة الصيدليات المناوبة 🏥</h2>
-                <button class="btn btn-gold" onclick="openModal(&#39;pharma-oncall-modal&#39;)"><i class="fas fa-calendar-plus"></i> إضافة جدول مناوبة</button>
+                <button class="btn btn-gold" onclick="openModal('pharma-oncall-modal')"><i class="fas fa-calendar-plus"></i> إضافة جدول مناوبة</button>
             </div>
             <p>تحديد الصيدليات الشركاء المناوبة حسب التاريخ والوقت.</p>
             <table class="custom-table">
@@ -936,7 +885,7 @@
                                 <div style="display:flex; gap:8px;">
                                     <select id="shift-log-filter" onchange="loadShiftLogs()" style="background:var(--p-dark); color:white; border:1px solid var(--gold); padding:5px 8px; border-radius:8px; font-size:11px;">
                                         <option value="7">آخر 7 أيام</option>
-                                        <option value="30" selected="">آخر 30 يوم</option>
+                                        <option value="30" selected>آخر 30 يوم</option>
                                         <option value="90">آخر 90 يوم</option>
                                         <option value="all">الكل</option>
                                     </select>
@@ -997,7 +946,9 @@
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:10px;">
                 <h2 style="color:var(--gold); margin:0;"><i class="fas fa-archive"></i> أرشيف الطلبات المسلمة 🦅</h2>
                 <div style="display:flex; gap:8px;">
-                    <button id="ca-toggle-btn" class="btn btn-gold" style="padding:8px 18px; font-size:12px; background:var(--glass); border:1px solid var(--gold); color:var(--gold-l);" onclick="toggleArchiveTable()">
+                    <button id="ca-toggle-btn" class="btn btn-gold"
+                        style="padding:8px 18px; font-size:12px; background:var(--glass); border:1px solid var(--gold); color:var(--gold-l);"
+                        onclick="toggleArchiveTable()">
                         <i class="fas fa-eye"></i> عرض السجل
                     </button>
                     <button class="btn btn-gold" style="padding:8px 18px; font-size:12px;" onclick="loadCompletedArchive()">
@@ -1049,7 +1000,9 @@
                             <option value="10">10 فائزين</option>
                             <option value="custom">عدد مخصص...</option>
                         </select>
-                        <input type="number" id="ca-winners-custom" min="1" max="100" placeholder="العدد" style="display:none; background:var(--p-dark); color:white; border:1px solid var(--gold); padding:8px 10px; border-radius:8px; font-size:13px; width:90px;" onchange="document.getElementById(&#39;ca-winners-count&#39;).value=&#39;custom&#39;">
+                        <input type="number" id="ca-winners-custom" min="1" max="100" placeholder="العدد"
+                            style="display:none; background:var(--p-dark); color:white; border:1px solid var(--gold); padding:8px 10px; border-radius:8px; font-size:13px; width:90px;"
+                            onchange="document.getElementById('ca-winners-count').value='custom'">
                     </div>
                     <button class="btn btn-gold" style="padding:10px 24px; font-size:13px; background:linear-gradient(135deg,var(--gold),#f1c40f);" onclick="runLotteryDraw()">
                         <i class="fas fa-dice"></i> ابدأ السحب العشوائي 🎲
@@ -1072,8 +1025,12 @@
                         <h4 style="color:var(--gold); margin:0; font-size:14px;">البحث في الأرشيف</h4>
                     </div>
                     <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
-                        <input type="text" id="ca-search-input" placeholder="ابحث: رقم الطلب، اسم العميل، رقم الحساب، رقم الجوال، اسم المنتج..." style="flex:1; min-width:280px; background:var(--p-dark); color:white; border:1px solid rgba(212,175,55,0.4); padding:10px 14px; border-radius:8px; font-size:13px; outline:none;" oninput="filterCompletedArchive()">
-                        <button class="btn" style="padding:10px 16px; background:rgba(231,76,60,0.15); border:1px solid #e74c3c; color:#e74c3c; font-size:12px; border-radius:8px; cursor:pointer;" onclick="document.getElementById(&#39;ca-search-input&#39;).value=&#39;&#39;; filterCompletedArchive();">
+                        <input type="text" id="ca-search-input"
+                            placeholder="ابحث: رقم الطلب، اسم العميل، رقم الحساب، رقم الجوال، اسم المنتج..."
+                            style="flex:1; min-width:280px; background:var(--p-dark); color:white; border:1px solid rgba(212,175,55,0.4); padding:10px 14px; border-radius:8px; font-size:13px; outline:none;"
+                            oninput="filterCompletedArchive()">
+                        <button class="btn" style="padding:10px 16px; background:rgba(231,76,60,0.15); border:1px solid #e74c3c; color:#e74c3c; font-size:12px; border-radius:8px; cursor:pointer;"
+                            onclick="document.getElementById('ca-search-input').value=''; filterCompletedArchive();">
                             <i class="fas fa-times"></i> مسح
                         </button>
                         <span id="ca-search-count" style="font-size:12px; color:#aaa; white-space:nowrap;"></span>
@@ -1129,47 +1086,12 @@
             </table>
         </div>
 
-        <div id="news-points-view" class="view-section active fs-view">
+        <div id="news-points-view" class="view-section">
             <h2 style="color:var(--gold)">إدارة الأخبار ونقاط الشاهين 🦅</h2>
             <div class="stats-grid">
                 <div class="stat-card" style="grid-column: span 2;">
                     <h4 style="color:var(--gold)">شريط الأخبار المتحرك</h4>
                     <div class="form-group"><label>نص الخبر (سيظهر للعميل بشكل متكرر)</label><textarea id="news-text-admin" rows="2" placeholder="اكتب عرض اليوم أو تنبيه هام هنا..."></textarea></div>
-                    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin-bottom:12px;">
-                        <div class="form-group" style="margin:0;">
-                            <label style="font-size:11px;">🔤 حجم الخط (px)</label>
-                            <input type="number" id="news-font-size" value="14" min="10" max="30" step="1" oninput="previewNewsBar()" style="width:100%;">
-                        </div>
-                        <div class="form-group" style="margin:0;">
-                            <label style="font-size:11px;">⚡ سرعة التمرير (ثانية)</label>
-                            <input type="number" id="news-speed" value="20" min="5" max="60" step="1" oninput="previewNewsBar()" style="width:100%;">
-                        </div>
-                        <div class="form-group" style="margin:0;">
-                            <label style="font-size:11px;">🎨 لون النص</label>
-                            <select id="news-color" onchange="previewNewsBar()" style="width:100%; padding:8px; background:var(--p-dark); color:#fff; border:1px solid var(--glass); border-radius:8px;">
-                                <option value="#d4af37">🟡 ذهبي</option>
-                                <option value="#ffffff">⚪ أبيض</option>
-                                <option value="#2ecc71">🟢 أخضر</option>
-                                <option value="#e74c3c">🔴 أحمر</option>
-                                <option value="#3498db">🔵 أزرق</option>
-                                <option value="#f39c12">🟠 برتقالي</option>
-                            </select>
-                        </div>
-                    </div>
-                    <!-- معاينة الشريط كما يراه العميل -->
-                    <div style="margin-bottom:12px;">
-                        <label style="font-size:11px; color:#aaa; display:block; margin-bottom:6px;">👁️ معاينة كما يراه العميل:</label>
-                        <div id="news-preview-box" style="background:#0a010a; border:1px solid rgba(212,175,55,0.3); border-radius:10px; padding:10px 0; overflow:hidden; position:relative; height:38px; display:flex; align-items:center;">
-                            <div id="news-preview-track" style="white-space: nowrap; position: absolute; animation: 20s linear 0s infinite normal none running newsScroll; display: flex; align-items: center; gap: 40px; font-size: 13px; color: rgb(52, 152, 219); font-weight: bold;">
-                                <span id="news-preview-text">🦅 نعتذر عن عدم توفر بعض المطاعم حالياً. نعمل جاهدين على إضافة جميع المطاعم لتلبية طلباتكم في أقرب وقت.<br><br>شكراً لتفهمكم!</span>
-                                <span style="opacity:0.4;">•••</span>
-                                <span id="news-preview-text2">🦅 نعتذر عن عدم توفر بعض المطاعم حالياً. نعمل جاهدين على إضافة جميع المطاعم لتلبية طلباتكم في أقرب وقت.<br><br>شكراً لتفهمكم!</span>
-                            </div>
-                        </div>
-                        <style>
-                        @keyframes newsScroll { 0% { transform: translateX(110%); } 100% { transform: translateX(-110%); } }
-                        </style>
-                    </div>
                     <button class="btn btn-gold" onclick="updateNews()">تحديث شريط الأخبار</button>
                 </div>
                 <div class="stat-card">
@@ -1322,8 +1244,8 @@
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;flex-wrap:wrap;gap:10px;">
                 <h2 style="color:var(--gold);margin:0;">نظام حد التمويل 🦅 (Target System)</h2>
                 <div style="display:flex;gap:10px;">
-                    <button class="btn btn-gold" style="background:#2ecc71;color:#fff;padding:10px 20px;font-size:13px;" onclick="toggleFinancingStatus(&#39;active&#39;)"><i class="fas fa-toggle-on"></i> تشغيل التمويل</button>
-                    <button class="btn btn-danger" style="padding:10px 20px;font-size:13px;" onclick="toggleFinancingStatus(&#39;inactive&#39;)"><i class="fas fa-toggle-off"></i> إيقاف التمويل</button>
+                    <button class="btn btn-gold" style="background:#2ecc71;color:#fff;padding:10px 20px;font-size:13px;" onclick="toggleFinancingStatus('active')"><i class="fas fa-toggle-on"></i> تشغيل التمويل</button>
+                    <button class="btn btn-danger" style="padding:10px 20px;font-size:13px;" onclick="toggleFinancingStatus('inactive')"><i class="fas fa-toggle-off"></i> إيقاف التمويل</button>
                 </div>
             </div>
             <div id="fin-status-banner" style="display:none;padding:10px 18px;border-radius:10px;font-size:13px;font-weight:bold;margin-bottom:15px;text-align:center;"></div>
@@ -1403,7 +1325,7 @@
                         <option value="rejected">مرفوض</option>
                         <option value="completed">مكتمل</option>
                     </select>
-                    <button class="btn btn-gold" onclick="openModal(&#39;add-financing-modal&#39;)"><i class="fas fa-plus"></i> إضافة تمويل يدوي</button>
+                    <button class="btn btn-gold" onclick="openModal('add-financing-modal')"><i class="fas fa-plus"></i> إضافة تمويل يدوي</button>
                 </div>
             </div>
             <div id="financing-cards-container">
@@ -1537,7 +1459,7 @@
                             <i class="fas fa-times"></i> رفض المعاملة
                         </button>
                         <button class="btn btn-gold no-print" onclick="window.print()"><i class="fas fa-print"></i> طباعة</button>
-                        <button class="btn btn-danger no-print" style="background:transparent;border:1px solid var(--danger);" onclick="closeModal(&#39;gm-approval-modal&#39;)">إغلاق</button>
+                        <button class="btn btn-danger no-print" style="background:transparent;border:1px solid var(--danger);" onclick="closeModal('gm-approval-modal')">إغلاق</button>
                     </div>
                 </div>
                 <div id="gm-stamp-verify-bar" style="display:none;background:rgba(142,68,173,0.12);border:1px solid #8e44ad;border-radius:8px;padding:10px 16px;font-size:12px;color:#c39bd3;margin-bottom:12px;text-align:center;" class="no-print"></div>
@@ -1552,8 +1474,8 @@
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:10px;">
                 <h2 style="color:#2ecc71; margin:0;"><i class="fas fa-charging-station"></i> نقاط الشحن والشركاء 🔋</h2>
                 <div style="display:flex; gap:10px; flex-wrap:wrap;">
-                    <button class="btn btn-gold" onclick="openModal(&#39;add-charge-partner-modal&#39;)"><i class="fas fa-plus"></i> إضافة شريك/نقطة شحن جديدة</button>
-                    <button class="btn btn-gold" style="background:#2ecc71; color:#fff;" onclick="openModal(&#39;direct-charge-modal&#39;)"><i class="fas fa-bolt"></i> شحن مندوب مباشر</button>
+                    <button class="btn btn-gold" onclick="openModal('add-charge-partner-modal')"><i class="fas fa-plus"></i> إضافة شريك/نقطة شحن جديدة</button>
+                    <button class="btn btn-gold" style="background:#2ecc71; color:#fff;" onclick="openModal('direct-charge-modal')"><i class="fas fa-bolt"></i> شحن مندوب مباشر</button>
                     <button class="btn btn-gold" style="background:rgba(52,152,219,0.2); border:1px solid #3498db; color:#3498db; font-size:11px;" onclick="showChargePartnersSQL()"><i class="fas fa-database"></i> SQL الإعداد</button>
                 </div>
             </div>
@@ -1600,7 +1522,7 @@
         <div id="system-staff-view" class="view-section">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                 <h2 style="color:var(--gold); margin:0;">إدارة موظفي النظام والسجلات 🛡️</h2>
-                <button class="btn btn-gold" onclick="openModal(&#39;staff-add-modal&#39;)"><i class="fas fa-user-plus"></i> إضافة موظف جديد</button>
+                <button class="btn btn-gold" onclick="openModal('staff-add-modal')"><i class="fas fa-user-plus"></i> إضافة موظف جديد</button>
             </div>
 
             <!-- ===== عداد المستخدمين الحقيقي ===== -->
@@ -1679,7 +1601,7 @@
             </div>
         </div>
 
-    
+    </div>
 
     <!-- ===== مودال: إعادة ضبط النظام الكامل ===== -->
     <div id="full-system-reset-modal" class="modal">
@@ -1698,25 +1620,25 @@
             <p style="font-size:13px; color:var(--gold); margin-bottom:5px; font-weight:bold;">اختر بيانات التشغيل التي تريد مسحها:</p>
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:15px;">
                 <label style="display:flex; align-items:center; gap:8px; font-size:12px; cursor:pointer; background:var(--glass); padding:8px; border-radius:8px;">
-                    <input type="checkbox" id="reset-orders" checked="" style="width:auto;"> الطلبات (sh_public_orders + orders)
+                    <input type="checkbox" id="reset-orders" checked style="width:auto;"> الطلبات (sh_public_orders + orders)
                 </label>
                 <label style="display:flex; align-items:center; gap:8px; font-size:12px; cursor:pointer; background:var(--glass); padding:8px; border-radius:8px;">
-                    <input type="checkbox" id="reset-ledger" checked="" style="width:auto;"> السجل المالي (ledger)
+                    <input type="checkbox" id="reset-ledger" checked style="width:auto;"> السجل المالي (ledger)
                 </label>
                 <label style="display:flex; align-items:center; gap:8px; font-size:12px; cursor:pointer; background:var(--glass); padding:8px; border-radius:8px;">
-                    <input type="checkbox" id="reset-charge-logs" checked="" style="width:auto;"> سجل الشحن (driver_charge_logs)
+                    <input type="checkbox" id="reset-charge-logs" checked style="width:auto;"> سجل الشحن (driver_charge_logs)
                 </label>
                 <label style="display:flex; align-items:center; gap:8px; font-size:12px; cursor:pointer; background:var(--glass); padding:8px; border-radius:8px;">
-                    <input type="checkbox" id="reset-notifications" checked="" style="width:auto;"> الإشعارات (notifications)
+                    <input type="checkbox" id="reset-notifications" checked style="width:auto;"> الإشعارات (notifications)
                 </label>
                 <label style="display:flex; align-items:center; gap:8px; font-size:12px; cursor:pointer; background:var(--glass); padding:8px; border-radius:8px;">
-                    <input type="checkbox" id="reset-hiring" checked="" style="width:auto;"> طلبات التوظيف (hiring_requests)
+                    <input type="checkbox" id="reset-hiring" checked style="width:auto;"> طلبات التوظيف (hiring_requests)
                 </label>
                 <label style="display:flex; align-items:center; gap:8px; font-size:12px; cursor:pointer; background:var(--glass); padding:8px; border-radius:8px;">
-                    <input type="checkbox" id="reset-financing" checked="" style="width:auto;"> التمويل (financing_requests)
+                    <input type="checkbox" id="reset-financing" checked style="width:auto;"> التمويل (financing_requests)
                 </label>
                 <label style="display:flex; align-items:center; gap:8px; font-size:12px; cursor:pointer; background:var(--glass); padding:8px; border-radius:8px;">
-                    <input type="checkbox" id="reset-attendance" checked="" style="width:auto;"> سجل الدوام (attendance_logs)
+                    <input type="checkbox" id="reset-attendance" checked style="width:auto;"> سجل الدوام (attendance_logs)
                 </label>
                 <label style="display:flex; align-items:center; gap:8px; font-size:12px; cursor:pointer; background:var(--glass); padding:8px; border-radius:8px;">
                     <input type="checkbox" id="reset-system-logs" style="width:auto;"> سجل العمليات (system_logs)
@@ -1748,7 +1670,7 @@
                 <button class="btn btn-danger" style="flex:1;" id="execute-reset-btn" onclick="executeFullSystemReset()">
                     <i class="fas fa-database"></i> تنفيذ مسح البيانات فقط
                 </button>
-                <button class="btn btn-gold" style="flex:1; background:var(--glass); border:1px solid var(--gold); color:var(--gold-l);" onclick="closeModal(&#39;full-system-reset-modal&#39;)">إلغاء</button>
+                <button class="btn btn-gold" style="flex:1; background:var(--glass); border:1px solid var(--gold); color:var(--gold-l);" onclick="closeModal('full-system-reset-modal')">إلغاء</button>
             </div>
         </div>
     </div>
@@ -1781,7 +1703,7 @@
                 <button class="btn btn-danger" style="flex:1; background:#9b59b6; border:none;" id="execute-purge-btn" onclick="executePurgeUsers()">
                     <i class="fas fa-users-slash"></i> تنفيذ الحذف الآن
                 </button>
-                <button class="btn btn-gold" style="flex:1; background:var(--glass); border:1px solid var(--gold); color:var(--gold-l);" onclick="closeModal(&#39;purge-users-modal&#39;)">إلغاء</button>
+                <button class="btn btn-gold" style="flex:1; background:var(--glass); border:1px solid var(--gold); color:var(--gold-l);" onclick="closeModal('purge-users-modal')">إلغاء</button>
             </div>
         </div>
     </div>
@@ -1806,7 +1728,7 @@
             <div class="form-group"><label>ملاحظات (اختياري)</label><textarea id="cp-notes" rows="2" placeholder="أي معلومات إضافية..."></textarea></div>
             <div style="display:flex; gap:10px; margin-top:15px;">
                 <button class="btn btn-gold" style="flex:1; background:#2ecc71; color:#fff;" onclick="saveChargePartner()"><i class="fas fa-save"></i> حفظ نقطة الشحن</button>
-                <button class="btn btn-danger" style="flex:1; background:transparent; border:1px solid var(--danger);" onclick="closeModal(&#39;add-charge-partner-modal&#39;)">إلغاء</button>
+                <button class="btn btn-danger" style="flex:1; background:transparent; border:1px solid var(--danger);" onclick="closeModal('add-charge-partner-modal')">إلغاء</button>
             </div>
         </div>
     </div>
@@ -1817,14 +1739,14 @@
             <h2 style="color:var(--gold);"><i class="fas fa-bolt"></i> شحن رصيد مندوب مباشرة</h2>
             <div class="form-group"><label>اختر المندوب</label>
                 <select id="direct-charge-driver-select" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--glass); background:var(--p-dark); color:white;">
-                    <option value="" disabled="" selected="">اختر المندوب</option>
+                    <option value="" disabled selected>اختر المندوب</option>
                 </select>
             </div>
             <div class="form-group"><label>مبلغ الشحن (ل.س)</label><input type="number" id="direct-charge-amount" placeholder="مثلاً 200000"></div>
             <div class="form-group"><label>ملاحظة (اختياري)</label><input type="text" id="direct-charge-note" placeholder="مثلاً: شحن نقدي من المكتب"></div>
             <div style="display:flex; gap:10px; margin-top:15px;">
                 <button class="btn btn-gold" style="flex:1; background:#2ecc71; color:#fff;" onclick="executeDirectCharge()"><i class="fas fa-bolt"></i> تنفيذ الشحن</button>
-                <button class="btn btn-danger" style="flex:1; background:transparent; border:1px solid var(--danger);" onclick="closeModal(&#39;direct-charge-modal&#39;)">إلغاء</button>
+                <button class="btn btn-danger" style="flex:1; background:transparent; border:1px solid var(--danger);" onclick="closeModal('direct-charge-modal')">إلغاء</button>
             </div>
         </div>
     </div>
@@ -1848,7 +1770,7 @@
                 <button class="btn btn-danger" style="flex:1; background:rgba(231,76,60,0.15); border:1px solid var(--danger); color:var(--danger);" onclick="executeDriverBalanceDeduct()"><i class="fas fa-minus"></i> خصم من الرصيد</button>
                 <!-- [END-DEDUCT-BTN] -->
             </div>
-            <button class="btn btn-danger" style="width:100%; margin-top:8px; background:transparent; border:1px solid #555; color:#888; font-size:12px;" onclick="closeModal(&#39;driver-balance-modal&#39;)">إغلاق</button>
+            <button class="btn btn-danger" style="width:100%; margin-top:8px; background:transparent; border:1px solid #555; color:#888; font-size:12px;" onclick="closeModal('driver-balance-modal')">إغلاق</button>
             <!-- زر تصفير المندوب -->
             <div style="margin-top:14px; padding-top:14px; border-top:1px solid rgba(255,255,255,0.08);">
                 <button class="btn btn-danger" style="width:100%; background:rgba(231,76,60,0.12); border:1px solid var(--danger); font-size:12px;" onclick="confirmResetDriver()">
@@ -1871,7 +1793,7 @@
             </div>
             <div style="display:flex; gap:10px; margin-top:14px;">
                 <button class="btn btn-danger" style="flex:2;" onclick="executeResetDriver()"><i class="fas fa-redo-alt"></i> تصفير الآن</button>
-                <button class="btn" style="flex:1; background:#333; color:#fff;" onclick="closeModal(&#39;reset-driver-modal&#39;)">إلغاء</button>
+                <button class="btn" style="flex:1; background:#333; color:#fff;" onclick="closeModal('reset-driver-modal')">إلغاء</button>
             </div>
         </div>
     </div>
@@ -1886,7 +1808,7 @@
             </div>
             <div style="display: flex; gap: 10px; margin-top: 20px;">
                 <button class="btn btn-gold" style="flex:1;background:linear-gradient(135deg,#8e44ad,#6c3483);" onclick="sendSettlementToGM()"><i class="fas fa-crown"></i> تحويل للمدير العام</button>
-                <button class="btn btn-danger" style="flex: 1;" onclick="closeModal(&#39;settlement-confirm-modal&#39;)">إلغاء</button>
+                <button class="btn btn-danger" style="flex: 1;" onclick="closeModal('settlement-confirm-modal')">إلغاء</button>
             </div>
         </div>
     </div>
@@ -1963,7 +1885,7 @@
                 <button class="btn btn-gold" id="btn-code-lock" onclick="toggleDriverCodeLock()">قفل الحساب</button>
                 <button class="btn btn-danger" onclick="deleteDriverProfile()">حذف الملف</button>
             </div>
-            <button class="btn btn-danger" style="width:100%; margin-top:10px; background:transparent; border:1px solid var(--danger);" onclick="closeModal(&#39;driver-action-modal&#39;)">إإغلاق</button>
+            <button class="btn btn-danger" style="width:100%; margin-top:10px; background:transparent; border:1px solid var(--danger);" onclick="closeModal('driver-action-modal')">إإغلاق</button>
         </div>
     </div>
 
@@ -2006,7 +1928,7 @@
             </div>
             <div class="form-group">
                 <label>كود التفعيل المبدئي</label>
-                <input type="text" id="h-driver-code-preview" readonly="">
+                <input type="text" id="h-driver-code-preview" readonly>
             </div>
             <div class="form-group">
                 <label>مسودة عقد العمل</label>
@@ -2015,10 +1937,10 @@
             </div>
             <div style="display:flex; gap:10px;">
                 <button class="btn btn-gold" style="flex:1;background:linear-gradient(135deg,#8e44ad,#6c3483);" onclick="sendHiringToGM()"><i class="fas fa-crown"></i> تحويل للمدير العام</button>
-                <button class="btn btn-danger" style="flex:1" onclick="updateHiringStatus(&#39;rejected&#39;)">رفض الطلب</button>
+                <button class="btn btn-danger" style="flex:1" onclick="updateHiringStatus('rejected')">رفض الطلب</button>
             </div>
             <button class="btn btn-gold" style="width:100%; margin-top:10px;" onclick="contactApplicantWhatsApp()">تواصل واتساب</button>
-            <button class="btn btn-danger" style="width:100%; margin-top:10px; background:transparent; border:1px solid var(--danger);" onclick="closeModal(&#39;hiring-detail-modal&#39;)">إلغاء</button>
+            <button class="btn btn-danger" style="width:100%; margin-top:10px; background:transparent; border:1px solid var(--danger);" onclick="closeModal('hiring-detail-modal')">إلغاء</button>
         </div>
     </div>
 
@@ -2039,16 +1961,18 @@
             <div class="form-group">
                 <label>كود الدخول العشوائي</label>
                 <div style="display: flex; gap: 10px;">
-                    <input type="text" id="p-sweets-code" readonly="" placeholder="سيتولد تلقائياً">
-                    <button class="btn btn-gold" onclick="generateRandomDriverCode(&#39;p-sweets-code&#39;)"><i class="fas fa-sync"></i></button>
+                    <input type="text" id="p-sweets-code" readonly placeholder="سيتولد تلقائياً">
+                    <button class="btn btn-gold" onclick="generateRandomDriverCode('p-sweets-code')"><i class="fas fa-sync"></i></button>
                 </div>
             </div>
             <div class="form-group"><label>نسبة الشركة (%)</label><input type="number" id="p-sweets-profit" placeholder="مثلاً 10"></div>
             <div class="form-group">
                 <label>🗺️ رابط موقع المتجر على Google Maps</label>
                 <div style="display:flex; gap:6px; align-items:flex-start;">
-                    <input type="text" id="p-sweets-maps-url" placeholder="https://maps.google.com/..." style="flex:1;" oninput="_previewMapsCoords(&#39;p-sweets-maps-url&#39;,&#39;sweets-maps-preview&#39;)">
-                    <button type="button" onclick="_verifyMapsUrl(&#39;p-sweets-maps-url&#39;)" style="background:#4285F4;color:#fff;border:none;border-radius:8px;padding:8px 10px;font-size:11px;cursor:pointer;white-space:nowrap;flex-shrink:0;">
+                    <input type="text" id="p-sweets-maps-url" placeholder="https://maps.google.com/..." style="flex:1;"
+                        oninput="_previewMapsCoords('p-sweets-maps-url','sweets-maps-preview')">
+                    <button type="button" onclick="_verifyMapsUrl('p-sweets-maps-url')"
+                        style="background:#4285F4;color:#fff;border:none;border-radius:8px;padding:8px 10px;font-size:11px;cursor:pointer;white-space:nowrap;flex-shrink:0;">
                         <i class="fas fa-map-marker-alt"></i> فتح
                     </button>
                 </div>
@@ -2070,7 +1994,7 @@
             <div id="sweets-menu-container" style="display:none;"></div>
             
             <button class="btn btn-gold" style="width:100%;background:linear-gradient(135deg,#8e44ad,#6c3483);" onclick="sendSweetsPartnershipToGM()"><i class="fas fa-crown"></i> تحويل للمدير العام</button>
-            <button class="btn btn-danger" style="width: 100%; margin-top: 10px; background: transparent; border: 1px solid var(--danger);" onclick="closeModal(&#39;sweets-partnership-add-modal&#39;)">إلغاء</button>
+            <button class="btn btn-danger" style="width: 100%; margin-top: 10px; background: transparent; border: 1px solid var(--danger);" onclick="closeModal('sweets-partnership-add-modal')">إلغاء</button>
         </div>
     </div>
 
@@ -2103,7 +2027,7 @@
             
             <h4 style="color:var(--gold); margin-bottom:10px; border-top: 1px solid var(--glass); padding-top:10px;">صلاحيات الدخول (القوائم)</h4>
             <div class="perms-grid" id="staff-perms-container">
-                <div class="perm-item"><input type="checkbox" value="finance-view" checked=""> التقارير المالية</div>
+                <div class="perm-item"><input type="checkbox" value="finance-view" checked> التقارير المالية</div>
                 <div class="perm-item"><input type="checkbox" value="settlement-view"> تسوية المناديب</div>
                 <div class="perm-item"><input type="checkbox" value="res-view"> إدارة المطاعم</div>
                 <div class="perm-item"><input type="checkbox" value="customers-view"> سجلات العملاء</div>
@@ -2124,7 +2048,7 @@
 
             <div style="display: flex; gap: 10px; margin-top: 20px;">
                 <button class="btn btn-gold" style="flex:1;background:linear-gradient(135deg,#8e44ad,#6c3483);" onclick="sendStaffToGM()"><i class="fas fa-crown"></i> تحويل للمدير العام</button>
-                <button class="btn btn-danger" style="flex: 1; background: transparent; border: 1px solid var(--danger);" onclick="closeModal(&#39;staff-add-modal&#39;)">إلغاء</button>
+                <button class="btn btn-danger" style="flex: 1; background: transparent; border: 1px solid var(--danger);" onclick="closeModal('staff-add-modal')">إلغاء</button>
             </div>
         </div>
     </div>
@@ -2139,7 +2063,7 @@
             </div>
             <h4 style="color:var(--gold)">سجل تحركات هذا الموظف</h4>
             <div id="staff-individual-logs" style="max-height: 250px; overflow-y: auto; background: var(--p-dark); padding: 10px; border-radius: 8px;"></div>
-            <button class="btn btn-danger" style="width:100%; margin-top:20px; background: transparent; border: 1px solid var(--danger);" onclick="closeModal(&#39;staff-profile-modal&#39;)">إإغلاق</button>
+            <button class="btn btn-danger" style="width:100%; margin-top:20px; background: transparent; border: 1px solid var(--danger);" onclick="closeModal('staff-profile-modal')">إإغلاق</button>
         </div>
     </div>
 
@@ -2147,7 +2071,7 @@
         <div class="modal-content">
             <h2 style="color:var(--gold)">طلبات الإدارة الموجهة لك 🦅</h2>
             <div id="staff-orders-list" style="max-height: 300px; overflow-y: auto;"></div>
-            <button class="btn btn-gold" style="width:100%; margin-top:20px;" onclick="closeModal(&#39;staff-orders-modal&#39;)">حسناً، سأقوم بالتنفيذ</button>
+            <button class="btn btn-gold" style="width:100%; margin-top:20px;" onclick="closeModal('staff-orders-modal')">حسناً، سأقوم بالتنفيذ</button>
         </div>
     </div>
 
@@ -2164,15 +2088,15 @@
                 <input type="text" id="withdrawal-reason" placeholder="اكتب سبب السحب هنا...">
             </div>
             <div style="display: flex; gap: 10px;">
-                <button class="btn btn-gold" style="flex:1" onclick="processBalanceAction(&#39;charge&#39;)">تأكيد شحن النقاط</button>
+                <button class="btn btn-gold" style="flex:1" onclick="processBalanceAction('charge')">تأكيد شحن النقاط</button>
                 <button class="btn btn-danger" style="flex:1" onclick="toggleWithdrawalReason()">سحب نقاط</button>
             </div>
-            <button class="btn btn-danger" id="confirm-withdraw-btn" style="width:100%; margin-top:10px; display:none;" onclick="processBalanceAction(&#39;withdraw&#39;)">تأكيد عملية السحب الآن</button>
+            <button class="btn btn-danger" id="confirm-withdraw-btn" style="width:100%; margin-top:10px; display:none;" onclick="processBalanceAction('withdraw')">تأكيد عملية السحب الآن</button>
             <div style="margin-top:20px; border-top:1px solid var(--gold); padding-top:10px;">
                 <h4 style="color:var(--gold)">سجل طلبات هذا العميل فقط</h4>
                 <div id="customer-linked-orders" style="max-height:200px; overflow-y:auto; font-size:12px;"></div>
             </div>
-            <button class="btn btn-danger" style="width: 100%; margin-top: 10px; background: transparent; border: 1px solid var(--danger);" onclick="closeModal(&#39;balance-modal&#39;)">إلغاء</button>
+            <button class="btn btn-danger" style="width: 100%; margin-top: 10px; background: transparent; border: 1px solid var(--danger);" onclick="closeModal('balance-modal')">إلغاء</button>
         </div>
     </div>
 
@@ -2182,7 +2106,7 @@
             <div class="form-group">
                 <label>اختر المطعم</label>
                 <select id="p-res-name-select" onchange="autoGenerateResEmail()">
-                    <option value="" disabled="" selected="">جاري تحميل المطاعم...</option>
+                    <option value="" disabled selected>جاري تحميل المطاعم...</option>
                 </select>
             </div>
             <div class="form-group">
@@ -2197,16 +2121,18 @@
             <div class="form-group">
                 <label>كود الدخول العشوائي</label>
                 <div style="display: flex; gap: 10px;">
-                    <input type="text" id="p-res-code" readonly="" placeholder="سيتولد تلقائياً">
-                    <button class="btn btn-gold" onclick="generateRandomDriverCode(&#39;p-res-code&#39;)"><i class="fas fa-sync"></i></button>
+                    <input type="text" id="p-res-code" readonly placeholder="سيتولد تلقائياً">
+                    <button class="btn btn-gold" onclick="generateRandomDriverCode('p-res-code')"><i class="fas fa-sync"></i></button>
                 </div>
             </div>
             <div class="form-group"><label>نسبة أرباح الشركة (%)</label><input type="number" id="p-res-profit" placeholder="مثلاً 15"></div>
             <div class="form-group">
                 <label>🗺️ رابط موقع المطعم على Google Maps</label>
                 <div style="display:flex; gap:6px; align-items:flex-start;">
-                    <input type="text" id="p-res-maps-url" placeholder="https://maps.google.com/..." style="flex:1;" oninput="_previewMapsCoords(&#39;p-res-maps-url&#39;,&#39;p-res-maps-preview&#39;)">
-                    <button type="button" onclick="_verifyMapsUrl(&#39;p-res-maps-url&#39;)" style="background:#4285F4;color:#fff;border:none;border-radius:8px;padding:8px 10px;font-size:11px;cursor:pointer;white-space:nowrap;flex-shrink:0;">
+                    <input type="text" id="p-res-maps-url" placeholder="https://maps.google.com/..." style="flex:1;"
+                        oninput="_previewMapsCoords('p-res-maps-url','p-res-maps-preview')">
+                    <button type="button" onclick="_verifyMapsUrl('p-res-maps-url')"
+                        style="background:#4285F4;color:#fff;border:none;border-radius:8px;padding:8px 10px;font-size:11px;cursor:pointer;white-space:nowrap;flex-shrink:0;">
                         <i class="fas fa-map-marker-alt"></i> فتح
                     </button>
                 </div>
@@ -2214,7 +2140,7 @@
             </div>
             <div class="form-group"><label>نص العقد أو الشروط</label><textarea id="p-res-contract" rows="3" placeholder="تفاصيل الاتفاق المالي..."></textarea></div>
             <button class="btn btn-gold" style="width:100%;background:linear-gradient(135deg,#8e44ad,#6c3483);" onclick="sendResPartnershipToGM()"><i class="fas fa-crown"></i> تحويل للمدير العام</button>
-            <button class="btn btn-danger" style="width: 100%; margin-top: 10px; background: transparent; border: 1px solid var(--danger);" onclick="closeModal(&#39;res-partnership-add-modal&#39;)">إلغاء</button>
+            <button class="btn btn-danger" style="width: 100%; margin-top: 10px; background: transparent; border: 1px solid var(--danger);" onclick="closeModal('res-partnership-add-modal')">إلغاء</button>
         </div>
     </div>
 
@@ -2227,8 +2153,8 @@
             <div class="form-group">
                 <label>كود الدخول العشوائي</label>
                 <div style="display: flex; gap: 10px;">
-                    <input type="text" id="p-pharma-code" readonly="" placeholder="سيتولد تلقائياً">
-                    <button class="btn btn-gold" onclick="generateRandomDriverCode(&#39;p-pharma-code&#39;)"><i class="fas fa-sync"></i></button>
+                    <input type="text" id="p-pharma-code" readonly placeholder="سيتولد تلقائياً">
+                    <button class="btn btn-gold" onclick="generateRandomDriverCode('p-pharma-code')"><i class="fas fa-sync"></i></button>
                 </div>
             </div>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
@@ -2239,7 +2165,7 @@
                 <label>تفعيل رسوم الاستشارة</label>
                 <div style="display:flex; align-items:center; gap:12px; background:rgba(255,255,255,0.04); border:1px solid #333; border-radius:10px; padding:10px;">
                     <label class="toggle-switch" style="margin:0;">
-                        <input type="checkbox" id="p-pharma-fee-enabled" onchange="document.getElementById(&#39;p-pharma-fee-enabled-label&#39;).innerText = this.checked ? &#39;مفعّل — تُضاف للفاتورة&#39; : &#39;إيقاف — الاستشارة مجانية&#39;; document.getElementById(&#39;p-pharma-fee-enabled-label&#39;).style.color = this.checked ? &#39;#f39c12&#39; : &#39;#888&#39;;">
+                        <input type="checkbox" id="p-pharma-fee-enabled" onchange="document.getElementById('p-pharma-fee-enabled-label').innerText = this.checked ? 'مفعّل — تُضاف للفاتورة' : 'إيقاف — الاستشارة مجانية'; document.getElementById('p-pharma-fee-enabled-label').style.color = this.checked ? '#f39c12' : '#888';">
                         <span class="toggle-slider"></span>
                     </label>
                     <div>
@@ -2252,8 +2178,10 @@
             <div class="form-group">
                 <label>🗺️ رابط موقع الصيدلية على Google Maps</label>
                 <div style="display:flex; gap:6px; align-items:flex-start;">
-                    <input type="text" id="p-pharma-maps-url" placeholder="https://maps.google.com/..." style="flex:1;" oninput="_previewMapsCoords(&#39;p-pharma-maps-url&#39;,&#39;p-pharma-maps-preview&#39;)">
-                    <button type="button" onclick="_verifyMapsUrl(&#39;p-pharma-maps-url&#39;)" style="background:#4285F4;color:#fff;border:none;border-radius:8px;padding:8px 10px;font-size:11px;cursor:pointer;white-space:nowrap;flex-shrink:0;">
+                    <input type="text" id="p-pharma-maps-url" placeholder="https://maps.google.com/..." style="flex:1;"
+                        oninput="_previewMapsCoords('p-pharma-maps-url','p-pharma-maps-preview')">
+                    <button type="button" onclick="_verifyMapsUrl('p-pharma-maps-url')"
+                        style="background:#4285F4;color:#fff;border:none;border-radius:8px;padding:8px 10px;font-size:11px;cursor:pointer;white-space:nowrap;flex-shrink:0;">
                         <i class="fas fa-map-marker-alt"></i> فتح
                     </button>
                 </div>
@@ -2261,11 +2189,11 @@
             </div>
             <div class="form-group"><label>نص اتفاق الشراكة</label><textarea id="p-pharma-contract" rows="3" placeholder="اكتب شروط الاتفاق الطبي هنا..."></textarea></div>
             <button class="btn btn-gold" style="width:100%;background:linear-gradient(135deg,#8e44ad,#6c3483);" onclick="sendPharmaPartnershipToGM()"><i class="fas fa-crown"></i> تحويل للمدير العام</button>
-            <button class="btn btn-danger" style="width: 100%; margin-top: 10px; background: transparent; border: 1px solid var(--danger);" onclick="closeModal(&#39;pharma-partnership-add-modal&#39;)">إلغاء</button>
+            <button class="btn btn-danger" style="width: 100%; margin-top: 10px; background: transparent; border: 1px solid var(--danger);" onclick="closeModal('pharma-partnership-add-modal')">إلغاء</button>
         </div>
     </div>
 
-    
+    </div>
 
     <!-- مودال تعديل صيدلية شريكة -->
     <div id="pharma-edit-modal" class="modal">
@@ -2282,7 +2210,7 @@
                 <label>تفعيل رسوم الاستشارة</label>
                 <div style="display:flex; align-items:center; gap:12px; background:rgba(255,255,255,0.04); border:1px solid #333; border-radius:10px; padding:10px;">
                     <label class="toggle-switch" style="margin:0;">
-                        <input type="checkbox" id="edit-pharma-fee-enabled" onchange="document.getElementById(&#39;edit-pharma-fee-enabled-label&#39;).innerText = this.checked ? &#39;مفعّل — تُضاف للفاتورة&#39; : &#39;إيقاف — الاستشارة مجانية&#39;; document.getElementById(&#39;edit-pharma-fee-enabled-label&#39;).style.color = this.checked ? &#39;#f39c12&#39; : &#39;#888&#39;;">
+                        <input type="checkbox" id="edit-pharma-fee-enabled" onchange="document.getElementById('edit-pharma-fee-enabled-label').innerText = this.checked ? 'مفعّل — تُضاف للفاتورة' : 'إيقاف — الاستشارة مجانية'; document.getElementById('edit-pharma-fee-enabled-label').style.color = this.checked ? '#f39c12' : '#888';">
                         <span class="toggle-slider"></span>
                     </label>
                     <div>
@@ -2293,7 +2221,7 @@
             </div>
             <div class="form-group"><label>نسبة الشركة (%)</label><input type="number" id="edit-pharma-profit" placeholder="مثلاً 12"></div>
             <button class="btn btn-gold" style="width:100%;" onclick="updatePharmaPartnership()"><i class="fas fa-save"></i> حفظ التعديلات</button>
-            <button class="btn btn-danger" style="width:100%; margin-top:10px; background:transparent; border:1px solid var(--danger);" onclick="closeModal(&#39;pharma-edit-modal&#39;)">إلغاء</button>
+            <button class="btn btn-danger" style="width:100%; margin-top:10px; background:transparent; border:1px solid var(--danger);" onclick="closeModal('pharma-edit-modal')">إلغاء</button>
         </div>
     </div>
 
@@ -2304,7 +2232,7 @@
             <div class="form-group">
                 <label>اختر الصيدلية</label>
                 <select id="oncall-pharma-select">
-                    <option value="" disabled="" selected="">جاري التحميل...</option>
+                    <option value="" disabled selected>جاري التحميل...</option>
                 </select>
             </div>
 
@@ -2313,7 +2241,7 @@
                 <label>نوع الجدولة</label>
                 <div style="display:flex; gap:10px; margin-top:5px;">
                     <label style="display:flex; align-items:center; gap:6px; cursor:pointer; background:rgba(212,175,55,0.1); border:1px solid var(--gold); padding:8px 14px; border-radius:8px; flex:1; justify-content:center;">
-                        <input type="radio" name="oncall-type" id="oncall-type-date" value="date" onchange="toggleOncallType()" checked="" style="width:auto; margin:0;">
+                        <input type="radio" name="oncall-type" id="oncall-type-date" value="date" onchange="toggleOncallType()" checked style="width:auto; margin:0;">
                         <span style="font-size:12px;">📅 تاريخ محدد</span>
                     </label>
                     <label style="display:flex; align-items:center; gap:6px; cursor:pointer; background:rgba(212,175,55,0.1); border:1px solid var(--gold); padding:8px 14px; border-radius:8px; flex:1; justify-content:center;">
@@ -2347,11 +2275,11 @@
             </div>
 
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-                <div class="form-group"><label>من الساعة</label><select id="oncall-start-time" class="time-selector-admin"><option value="00:00">12:00 ص</option><option value="00:30">12:30 ص</option><option value="01:00">1:00 ص</option><option value="01:30">1:30 ص</option><option value="02:00">2:00 ص</option><option value="02:30">2:30 ص</option><option value="03:00">3:00 ص</option><option value="03:30">3:30 ص</option><option value="04:00">4:00 ص</option><option value="04:30">4:30 ص</option><option value="05:00">5:00 ص</option><option value="05:30">5:30 ص</option><option value="06:00">6:00 ص</option><option value="06:30">6:30 ص</option><option value="07:00">7:00 ص</option><option value="07:30">7:30 ص</option><option value="08:00">8:00 ص</option><option value="08:30">8:30 ص</option><option value="09:00">9:00 ص</option><option value="09:30">9:30 ص</option><option value="10:00">10:00 ص</option><option value="10:30">10:30 ص</option><option value="11:00">11:00 ص</option><option value="11:30">11:30 ص</option><option value="12:00">12:00 م</option><option value="12:30">12:30 م</option><option value="13:00">1:00 م</option><option value="13:30">1:30 م</option><option value="14:00">2:00 م</option><option value="14:30">2:30 م</option><option value="15:00">3:00 م</option><option value="15:30">3:30 م</option><option value="16:00">4:00 م</option><option value="16:30">4:30 م</option><option value="17:00">5:00 م</option><option value="17:30">5:30 م</option><option value="18:00">6:00 م</option><option value="18:30">6:30 م</option><option value="19:00">7:00 م</option><option value="19:30">7:30 م</option><option value="20:00">8:00 م</option><option value="20:30">8:30 م</option><option value="21:00">9:00 م</option><option value="21:30">9:30 م</option><option value="22:00">10:00 م</option><option value="22:30">10:30 م</option><option value="23:00">11:00 م</option><option value="23:30">11:30 م</option></select></div>
-                <div class="form-group"><label>إلى الساعة</label><select id="oncall-end-time" class="time-selector-admin"><option value="00:00">12:00 ص</option><option value="00:30">12:30 ص</option><option value="01:00">1:00 ص</option><option value="01:30">1:30 ص</option><option value="02:00">2:00 ص</option><option value="02:30">2:30 ص</option><option value="03:00">3:00 ص</option><option value="03:30">3:30 ص</option><option value="04:00">4:00 ص</option><option value="04:30">4:30 ص</option><option value="05:00">5:00 ص</option><option value="05:30">5:30 ص</option><option value="06:00">6:00 ص</option><option value="06:30">6:30 ص</option><option value="07:00">7:00 ص</option><option value="07:30">7:30 ص</option><option value="08:00">8:00 ص</option><option value="08:30">8:30 ص</option><option value="09:00">9:00 ص</option><option value="09:30">9:30 ص</option><option value="10:00">10:00 ص</option><option value="10:30">10:30 ص</option><option value="11:00">11:00 ص</option><option value="11:30">11:30 ص</option><option value="12:00">12:00 م</option><option value="12:30">12:30 م</option><option value="13:00">1:00 م</option><option value="13:30">1:30 م</option><option value="14:00">2:00 م</option><option value="14:30">2:30 م</option><option value="15:00">3:00 م</option><option value="15:30">3:30 م</option><option value="16:00">4:00 م</option><option value="16:30">4:30 م</option><option value="17:00">5:00 م</option><option value="17:30">5:30 م</option><option value="18:00">6:00 م</option><option value="18:30">6:30 م</option><option value="19:00">7:00 م</option><option value="19:30">7:30 م</option><option value="20:00">8:00 م</option><option value="20:30">8:30 م</option><option value="21:00">9:00 م</option><option value="21:30">9:30 م</option><option value="22:00">10:00 م</option><option value="22:30">10:30 م</option><option value="23:00">11:00 م</option><option value="23:30">11:30 م</option></select></div>
+                <div class="form-group"><label>من الساعة</label><select id="oncall-start-time" class="time-selector-admin"></select></div>
+                <div class="form-group"><label>إلى الساعة</label><select id="oncall-end-time" class="time-selector-admin"></select></div>
             </div>
             <button class="btn btn-gold" style="width:100%;" onclick="savePharmaOnCall()">حفظ وتفعيل الجدول ✅</button>
-            <button class="btn btn-danger" style="width:100%; margin-top:10px; background:transparent; border:1px solid var(--danger);" onclick="closeModal(&#39;pharma-oncall-modal&#39;)">إلغاء</button>
+            <button class="btn btn-danger" style="width:100%; margin-top:10px; background:transparent; border:1px solid var(--danger);" onclick="closeModal('pharma-oncall-modal')">إلغاء</button>
         </div>
     </div>
 
@@ -2366,8 +2294,8 @@
             <div id="res-detail-meals" style="margin-top: 20px;"></div>
             <div style="display: flex; gap: 10px; margin-top: 20px;">
                 <button id="btn-edit-res-trigger" class="btn btn-gold" style="flex:1;">تعديل البيانات</button>
-                <button id="btn-delete-res-trigger" class="btn btn-danger" style="flex:1; opacity:0.35; cursor:not-allowed;" title="حذف المطاعم محظور من النظام" onclick="showNotify(&#39;🚫 ممنوع حذف المطاعم — استخدم خيار الإيقاف بدلاً من الحذف&#39;)">حذف المطعم 🚫</button>
-                <button class="btn btn-danger" style="flex:1; background: transparent; border: 1px solid var(--danger);" onclick="closeModal(&#39;res-detail-modal&#39;)">إإغلاق</button>
+                <button id="btn-delete-res-trigger" class="btn btn-danger" style="flex:1; opacity:0.35; cursor:not-allowed;" title="حذف المطاعم محظور من النظام" onclick="showNotify('🚫 ممنوع حذف المطاعم — استخدم خيار الإيقاف بدلاً من الحذف')">حذف المطعم 🚫</button>
+                <button class="btn btn-danger" style="flex:1; background: transparent; border: 1px solid var(--danger);" onclick="closeModal('res-detail-modal')">إإغلاق</button>
             </div>
         </div>
     </div>
@@ -2383,15 +2311,18 @@
             <div class="form-group"><label>رابط اللوجو (صورة المطعم)</label><input type="text" id="r-logo"></div>
             <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
                 <div class="form-group"><label>سعر التوصيل (ل.س)</label><input type="number" id="r-delivery"></div>
-                <div class="form-group"><label>وقت الفتح</label><select id="r-open" class="time-selector-admin"><option value="00:00">12:00 ص</option><option value="00:30">12:30 ص</option><option value="01:00">1:00 ص</option><option value="01:30">1:30 ص</option><option value="02:00">2:00 ص</option><option value="02:30">2:30 ص</option><option value="03:00">3:00 ص</option><option value="03:30">3:30 ص</option><option value="04:00">4:00 ص</option><option value="04:30">4:30 ص</option><option value="05:00">5:00 ص</option><option value="05:30">5:30 ص</option><option value="06:00">6:00 ص</option><option value="06:30">6:30 ص</option><option value="07:00">7:00 ص</option><option value="07:30">7:30 ص</option><option value="08:00">8:00 ص</option><option value="08:30">8:30 ص</option><option value="09:00">9:00 ص</option><option value="09:30">9:30 ص</option><option value="10:00">10:00 ص</option><option value="10:30">10:30 ص</option><option value="11:00">11:00 ص</option><option value="11:30">11:30 ص</option><option value="12:00">12:00 م</option><option value="12:30">12:30 م</option><option value="13:00">1:00 م</option><option value="13:30">1:30 م</option><option value="14:00">2:00 م</option><option value="14:30">2:30 م</option><option value="15:00">3:00 م</option><option value="15:30">3:30 م</option><option value="16:00">4:00 م</option><option value="16:30">4:30 م</option><option value="17:00">5:00 م</option><option value="17:30">5:30 م</option><option value="18:00">6:00 م</option><option value="18:30">6:30 م</option><option value="19:00">7:00 م</option><option value="19:30">7:30 م</option><option value="20:00">8:00 م</option><option value="20:30">8:30 م</option><option value="21:00">9:00 م</option><option value="21:30">9:30 م</option><option value="22:00">10:00 م</option><option value="22:30">10:30 م</option><option value="23:00">11:00 م</option><option value="23:30">11:30 م</option></select></div>
-                <div class="form-group"><label>وقت الإغلاق</label><select id="r-close" class="time-selector-admin"><option value="00:00">12:00 ص</option><option value="00:30">12:30 ص</option><option value="01:00">1:00 ص</option><option value="01:30">1:30 ص</option><option value="02:00">2:00 ص</option><option value="02:30">2:30 ص</option><option value="03:00">3:00 ص</option><option value="03:30">3:30 ص</option><option value="04:00">4:00 ص</option><option value="04:30">4:30 ص</option><option value="05:00">5:00 ص</option><option value="05:30">5:30 ص</option><option value="06:00">6:00 ص</option><option value="06:30">6:30 ص</option><option value="07:00">7:00 ص</option><option value="07:30">7:30 ص</option><option value="08:00">8:00 ص</option><option value="08:30">8:30 ص</option><option value="09:00">9:00 ص</option><option value="09:30">9:30 ص</option><option value="10:00">10:00 ص</option><option value="10:30">10:30 ص</option><option value="11:00">11:00 ص</option><option value="11:30">11:30 ص</option><option value="12:00">12:00 م</option><option value="12:30">12:30 م</option><option value="13:00">1:00 م</option><option value="13:30">1:30 م</option><option value="14:00">2:00 م</option><option value="14:30">2:30 م</option><option value="15:00">3:00 م</option><option value="15:30">3:30 م</option><option value="16:00">4:00 م</option><option value="16:30">4:30 م</option><option value="17:00">5:00 م</option><option value="17:30">5:30 م</option><option value="18:00">6:00 م</option><option value="18:30">6:30 م</option><option value="19:00">7:00 م</option><option value="19:30">7:30 م</option><option value="20:00">8:00 م</option><option value="20:30">8:30 م</option><option value="21:00">9:00 م</option><option value="21:30">9:30 م</option><option value="22:00">10:00 م</option><option value="22:30">10:30 م</option><option value="23:00">11:00 م</option><option value="23:30">11:30 م</option></select></div>
+                <div class="form-group"><label>وقت الفتح</label><select id="r-open" class="time-selector-admin"></select></div>
+                <div class="form-group"><label>وقت الإغلاق</label><select id="r-close" class="time-selector-admin"></select></div>
             </div>
             <div class="form-group"><label>نسبة أرباح الشركة (%) المتفق عليها</label><input type="number" id="r-profit-percent" placeholder="مثلاً 10"></div>
             <div class="form-group">
                 <label>🗺️ رابط موقع المطعم على Google Maps</label>
                 <div style="display:flex; gap:6px; align-items:flex-start;">
-                    <input type="text" id="r-maps-url" placeholder="https://maps.google.com/..." style="flex:1;" oninput="_previewMapsCoords(&#39;r-maps-url&#39;,&#39;r-maps-preview&#39;)">
-                    <button type="button" onclick="_verifyMapsUrl(&#39;r-maps-url&#39;)" style="background:#4285F4;color:#fff;border:none;border-radius:8px;padding:8px 10px;font-size:11px;cursor:pointer;white-space:nowrap;flex-shrink:0;">
+                    <input type="text" id="r-maps-url" placeholder="https://maps.google.com/..."
+                        style="flex:1;"
+                        oninput="_previewMapsCoords('r-maps-url','r-maps-preview')">
+                    <button type="button" onclick="_verifyMapsUrl('r-maps-url')"
+                        style="background:#4285F4;color:#fff;border:none;border-radius:8px;padding:8px 10px;font-size:11px;cursor:pointer;white-space:nowrap;flex-shrink:0;">
                         <i class="fas fa-map-marker-alt"></i> فتح
                     </button>
                 </div>
@@ -2414,14 +2345,14 @@
             <!-- أزرار أقسام جاهزة سريعة -->
             <div style="display:flex; gap:5px; flex-wrap:wrap; margin-bottom:12px;">
                 <span style="font-size:10px; color:#888; align-self:center;">أقسام جاهزة:</span>
-                <button onclick="addMenuCategory(&#39;وجبات رئيسية&#39;,&#39;🍽️&#39;)" style="background:rgba(212,175,55,0.15);border:1px solid var(--gold);color:var(--gold);padding:3px 8px;border-radius:8px;font-size:10px;cursor:pointer;">🍽️ وجبات</button>
-                <button onclick="addMenuCategory(&#39;مشروبات&#39;,&#39;🥤&#39;)" style="background:rgba(52,152,219,0.15);border:1px solid #3498db;color:#3498db;padding:3px 8px;border-radius:8px;font-size:10px;cursor:pointer;">🥤 مشروبات</button>
-                <button onclick="addMenuCategory(&#39;حلويات&#39;,&#39;🍰&#39;)" style="background:rgba(155,89,182,0.15);border:1px solid #9b59b6;color:#9b59b6;padding:3px 8px;border-radius:8px;font-size:10px;cursor:pointer;">🍰 حلويات</button>
-                <button onclick="addMenuCategory(&#39;مقبلات&#39;,&#39;🥗&#39;)" style="background:rgba(46,204,113,0.15);border:1px solid #2ecc71;color:#2ecc71;padding:3px 8px;border-radius:8px;font-size:10px;cursor:pointer;">🥗 مقبلات</button>
-                <button onclick="addMenuCategory(&#39;إضافات&#39;,&#39;➕&#39;)" style="background:rgba(241,196,15,0.15);border:1px solid #f1c40f;color:#f1c40f;padding:3px 8px;border-radius:8px;font-size:10px;cursor:pointer;">➕ إضافات</button>
-                <button onclick="addMenuCategory(&#39;عروض&#39;,&#39;🎁&#39;)" style="background:rgba(231,76,60,0.15);border:1px solid #e74c3c;color:#e74c3c;padding:3px 8px;border-radius:8px;font-size:10px;cursor:pointer;">🎁 عروض</button>
-                <button onclick="addMenuCategory(&#39;بوكسات ورد&#39;,&#39;🌹&#39;)" style="background:rgba(233,30,99,0.15);border:1px solid #e91e63;color:#e91e63;padding:3px 8px;border-radius:8px;font-size:10px;cursor:pointer;">🌹 بوكسات</button>
-                <button onclick="addMenuCategory(&#39;أطباق جانبية&#39;,&#39;🍟&#39;)" style="background:rgba(255,152,0,0.15);border:1px solid #ff9800;color:#ff9800;padding:3px 8px;border-radius:8px;font-size:10px;cursor:pointer;">🍟 جانبية</button>
+                <button onclick="addMenuCategory('وجبات رئيسية','🍽️')" style="background:rgba(212,175,55,0.15);border:1px solid var(--gold);color:var(--gold);padding:3px 8px;border-radius:8px;font-size:10px;cursor:pointer;">🍽️ وجبات</button>
+                <button onclick="addMenuCategory('مشروبات','🥤')" style="background:rgba(52,152,219,0.15);border:1px solid #3498db;color:#3498db;padding:3px 8px;border-radius:8px;font-size:10px;cursor:pointer;">🥤 مشروبات</button>
+                <button onclick="addMenuCategory('حلويات','🍰')" style="background:rgba(155,89,182,0.15);border:1px solid #9b59b6;color:#9b59b6;padding:3px 8px;border-radius:8px;font-size:10px;cursor:pointer;">🍰 حلويات</button>
+                <button onclick="addMenuCategory('مقبلات','🥗')" style="background:rgba(46,204,113,0.15);border:1px solid #2ecc71;color:#2ecc71;padding:3px 8px;border-radius:8px;font-size:10px;cursor:pointer;">🥗 مقبلات</button>
+                <button onclick="addMenuCategory('إضافات','➕')" style="background:rgba(241,196,15,0.15);border:1px solid #f1c40f;color:#f1c40f;padding:3px 8px;border-radius:8px;font-size:10px;cursor:pointer;">➕ إضافات</button>
+                <button onclick="addMenuCategory('عروض','🎁')" style="background:rgba(231,76,60,0.15);border:1px solid #e74c3c;color:#e74c3c;padding:3px 8px;border-radius:8px;font-size:10px;cursor:pointer;">🎁 عروض</button>
+                <button onclick="addMenuCategory('بوكسات ورد','🌹')" style="background:rgba(233,30,99,0.15);border:1px solid #e91e63;color:#e91e63;padding:3px 8px;border-radius:8px;font-size:10px;cursor:pointer;">🌹 بوكسات</button>
+                <button onclick="addMenuCategory('أطباق جانبية','🍟')" style="background:rgba(255,152,0,0.15);border:1px solid #ff9800;color:#ff9800;padding:3px 8px;border-radius:8px;font-size:10px;cursor:pointer;">🍟 جانبية</button>
             </div>
 
             <!-- حاوية الأقسام الديناميكية -->
@@ -2431,7 +2362,7 @@
             <div id="legacy-meals-hidden" style="display:none;"></div>
             <div style="display: flex; gap: 10px; margin-top: 20px;">
                 <button class="btn btn-gold" style="background:linear-gradient(135deg,#8e44ad,#6c3483);" onclick="sendResToGM()"><i class="fas fa-crown"></i> تحويل للمدير العام</button>
-                <button class="btn btn-danger" onclick="closeModal(&#39;res-modal&#39;)">إلغاء</button>
+                <button class="btn btn-danger" onclick="closeModal('res-modal')">إلغاء</button>
             </div>
         </div>
     </div>
@@ -2442,7 +2373,7 @@
             <div class="form-group"><label>اسم الصقر</label><input type="text" id="m-driver-name"></div>
             <div class="form-group"><label>رقم الجوال</label><input type="text" id="m-driver-phone"></div>
             <div class="form-group"><label>البريد الإلكتروني</label><input type="email" id="m-driver-email"></div>
-            <div class="form-group"><label>كود التفعيل</label><input type="text" id="m-driver-code" readonly=""></div>
+            <div class="form-group"><label>كود التفعيل</label><input type="text" id="m-driver-code" readonly></div>
             <div class="form-group"><label>نسبة الشركة (%)</label><input type="number" id="m-driver-profit"></div>
             <div class="form-group" style="border: 2px solid #2ecc71; border-radius: 10px; padding: 12px; background: rgba(46,204,113,0.05);">
                 <label style="color:#2ecc71; font-weight:bold;"><i class="fas fa-wallet"></i> الرصيد الافتتاحي (ل.س) *</label>
@@ -2451,7 +2382,7 @@
             </div>
             <div class="form-group"><label>نص العقد</label><textarea id="m-driver-contract" rows="3"></textarea></div>
             <button class="btn btn-gold" style="width:100%;background:linear-gradient(135deg,#8e44ad,#6c3483);" onclick="sendManualDriverToGM()"><i class="fas fa-crown"></i> تحويل للمدير العام</button>
-            <button class="btn btn-danger" style="width:100%; margin-top:10px;" onclick="closeModal(&#39;manual-driver-modal&#39;)">إلغاء</button>
+            <button class="btn btn-danger" style="width:100%; margin-top:10px;" onclick="closeModal('manual-driver-modal')">إلغاء</button>
         </div>
     </div>
 
@@ -2460,7 +2391,7 @@
             <h2 style="color:var(--gold)">إرسال تنبيه للمندوب</h2>
             <textarea id="driver-alert-msg" rows="4" placeholder="اكتب نص التنبيه هنا..."></textarea>
             <button class="btn btn-gold" style="width:100%; margin-top:10px;" onclick="sendDriverAlert()">إرسال الآن</button>
-            <button class="btn btn-danger" style="width:100%; margin-top:10px;" onclick="closeModal(&#39;driver-alert-modal&#39;)">إلغاء</button>
+            <button class="btn btn-danger" style="width:100%; margin-top:10px;" onclick="closeModal('driver-alert-modal')">إلغاء</button>
         </div>
     </div>
 
@@ -2472,7 +2403,7 @@
                 <div class="form-group">
                     <label>المندوب</label>
                     <select id="fin-driver-select" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--glass); background:var(--p-dark); color:white;">
-                        <option value="" disabled="" selected="">اختر المندوب</option>
+                        <option value="" disabled selected>اختر المندوب</option>
                     </select>
                 </div>
                 <div class="form-group"><label>نوع التمويل</label><input type="text" id="fin-type-input" placeholder="مثلاً: دبابة كهربائية، مبلغ نقدي..."></div>
@@ -2499,7 +2430,7 @@
             </div>
             <div style="display:flex; gap:10px; margin-top:15px;">
                 <button class="btn btn-gold" style="flex:1;" onclick="saveFinancingRecord()">💾 حفظ سجل التمويل</button>
-                <button class="btn btn-danger" style="flex:1; background:transparent; border:1px solid var(--danger);" onclick="closeModal(&#39;add-financing-modal&#39;)">إلغاء</button>
+                <button class="btn btn-danger" style="flex:1; background:transparent; border:1px solid var(--danger);" onclick="closeModal('add-financing-modal')">إلغاء</button>
             </div>
         </div>
     </div>
@@ -2568,12 +2499,12 @@
             <!-- رفع الملفات -->
             <h4 style="color:var(--gold);">📎 ملفات ووثائق التمويل</h4>
             <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; margin-bottom:15px;">
-                <label class="fin-doc-btn"><i class="fas fa-id-card"></i> صورة الهوية<input type="file" accept="image/*,.pdf" style="display:none;" onchange="uploadFinancingDoc(this, &#39;id_image&#39;)"></label>
-                <label class="fin-doc-btn"><i class="fas fa-car"></i> صورة الرخصة<input type="file" accept="image/*,.pdf" style="display:none;" onchange="uploadFinancingDoc(this, &#39;license_image&#39;)"></label>
-                <label class="fin-doc-btn"><i class="fas fa-receipt"></i> سندات الدفع<input type="file" accept="image/*,.pdf" style="display:none;" onchange="uploadFinancingDoc(this, &#39;payment_receipt&#39;)"></label>
-                <label class="fin-doc-btn"><i class="fas fa-file-contract"></i> العقود<input type="file" accept="image/*,.pdf" style="display:none;" onchange="uploadFinancingDoc(this, &#39;contract_file&#39;)"></label>
-                <label class="fin-doc-btn"><i class="fas fa-file-invoice"></i> سند الأمر<input type="file" accept="image/*,.pdf" style="display:none;" onchange="uploadFinancingDoc(this, &#39;promissory_note&#39;)"></label>
-                <label class="fin-doc-btn"><i class="fas fa-shield-alt"></i> ملفات التأمين<input type="file" accept="image/*,.pdf" style="display:none;" onchange="uploadFinancingDoc(this, &#39;insurance_file&#39;)"></label>
+                <label class="fin-doc-btn"><i class="fas fa-id-card"></i> صورة الهوية<input type="file" accept="image/*,.pdf" style="display:none;" onchange="uploadFinancingDoc(this, 'id_image')"></label>
+                <label class="fin-doc-btn"><i class="fas fa-car"></i> صورة الرخصة<input type="file" accept="image/*,.pdf" style="display:none;" onchange="uploadFinancingDoc(this, 'license_image')"></label>
+                <label class="fin-doc-btn"><i class="fas fa-receipt"></i> سندات الدفع<input type="file" accept="image/*,.pdf" style="display:none;" onchange="uploadFinancingDoc(this, 'payment_receipt')"></label>
+                <label class="fin-doc-btn"><i class="fas fa-file-contract"></i> العقود<input type="file" accept="image/*,.pdf" style="display:none;" onchange="uploadFinancingDoc(this, 'contract_file')"></label>
+                <label class="fin-doc-btn"><i class="fas fa-file-invoice"></i> سند الأمر<input type="file" accept="image/*,.pdf" style="display:none;" onchange="uploadFinancingDoc(this, 'promissory_note')"></label>
+                <label class="fin-doc-btn"><i class="fas fa-shield-alt"></i> ملفات التأمين<input type="file" accept="image/*,.pdf" style="display:none;" onchange="uploadFinancingDoc(this, 'insurance_file')"></label>
             </div>
             <div id="fin-docs-list" style="max-height:120px; overflow-y:auto; margin-bottom:15px;"></div>
             <!-- زر إنشاء سند أمر -->
@@ -2588,7 +2519,7 @@
                 <i class="fas fa-crown"></i> تحويل للمدير العام للختم والاعتماد النهائي
             </button>
             <div id="stamp-status-display" style="display:none; background:rgba(142,68,173,0.1); border:1px solid #8e44ad; border-radius:8px; padding:8px 12px; font-size:11px; color:#c39bd3; margin-bottom:10px; text-align:center;"></div>
-            <button class="btn btn-danger" style="width:100%; background:transparent; border:1px solid var(--danger);" onclick="closeModal(&#39;financing-detail-modal&#39;)">إغلاق</button>
+            <button class="btn btn-danger" style="width:100%; background:transparent; border:1px solid var(--danger);" onclick="closeModal('financing-detail-modal')">إغلاق</button>
         </div>
     </div>
 
@@ -2599,7 +2530,7 @@
                 <h3 style="color:var(--p-dark); margin:0;">سند الأمر - معاينة قبل الطباعة</h3>
                 <div style="display:flex; gap:10px;">
                     <button class="btn btn-gold no-print" onclick="window.print()"><i class="fas fa-print"></i> طباعة</button>
-                    <button class="btn btn-danger no-print" onclick="closeModal(&#39;promissory-note-modal&#39;)">إغلاق</button>
+                    <button class="btn btn-danger no-print" onclick="closeModal('promissory-note-modal')">إغلاق</button>
                 </div>
             </div>
             <div id="promissory-note-content" class="print-bond-area bond-document" style="max-width:700px; margin:0 auto;">
@@ -2615,7 +2546,7 @@
                 <h3 style="color:var(--p-dark); margin:0;">وصل سداد الأقساط - معاينة قبل الطباعة</h3>
                 <div style="display:flex; gap:10px;">
                     <button class="btn btn-gold no-print" onclick="window.print()"><i class="fas fa-print"></i> طباعة</button>
-                    <button class="btn btn-danger no-print" onclick="closeModal(&#39;payment-receipt-modal&#39;)">إغلاق</button>
+                    <button class="btn btn-danger no-print" onclick="closeModal('payment-receipt-modal')">إغلاق</button>
                 </div>
             </div>
             <div id="payment-receipt-content" class="print-bond-area bond-document" style="max-width:700px; margin:0 auto;">
@@ -2629,7 +2560,7 @@
         <div class="modal-content" style="max-width:600px;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
                 <h2 style="color:var(--gold); margin:0;"><i class="fas fa-user-circle"></i> ملف نقطة الشحن</h2>
-                <button class="btn btn-danger" style="background:transparent; border:1px solid var(--danger);" onclick="closeModal(&#39;partner-profile-modal&#39;)"><i class="fas fa-times"></i></button>
+                <button class="btn btn-danger" style="background:transparent; border:1px solid var(--danger);" onclick="closeModal('partner-profile-modal')"><i class="fas fa-times"></i></button>
             </div>
             <div id="partner-profile-content">
                 <p style="text-align:center; opacity:0.5;">جاري تحميل البيانات...</p>
@@ -2646,7 +2577,7 @@
                 <textarea id="cust-direct-msg-text" rows="5" placeholder="اكتب رسالتك هنا لتصل لصندوق بريد العميل..."></textarea>
             </div>
             <button class="btn btn-gold" style="width: 100%;" onclick="sendDirectMessageToCustomer()">إرسال الرسالة الآن</button>
-            <button class="btn btn-danger" style="width: 100%; margin-top: 10px; background: transparent; border: 1px solid var(--danger);" onclick="closeModal(&#39;cust-message-modal&#39;)">إلغاء</button>
+            <button class="btn btn-danger" style="width: 100%; margin-top: 10px; background: transparent; border: 1px solid var(--danger);" onclick="closeModal('cust-message-modal')">إلغاء</button>
         </div>
     </div>
 
@@ -6167,33 +6098,8 @@
                 document.getElementById('money-per-point').value = config.money_per_point || 0;
                 document.getElementById('min-order-for-bonus').value = config.min_order_for_bonus || 99000;
                 document.getElementById('bonus-points').value = config.bonus_points || 5;
-                if(config.news_font_size) document.getElementById('news-font-size').value = config.news_font_size;
-                if(config.news_speed) document.getElementById('news-speed').value = config.news_speed;
-                if(config.news_color) document.getElementById('news-color').value = config.news_color;
-            }
-            previewNewsBar();
-        }
-
-        function previewNewsBar() {
-            const text = document.getElementById('news-text-admin').value || '🦅 اكتب نص الخبر لترى المعاينة...';
-            const fontSize = document.getElementById('news-font-size').value || 14;
-            const speed = document.getElementById('news-speed').value || 20;
-            const color = document.getElementById('news-color').value || '#d4af37';
-            const track = document.getElementById('news-preview-track');
-            const t1 = document.getElementById('news-preview-text');
-            const t2 = document.getElementById('news-preview-text2');
-            if(track && t1 && t2) {
-                t1.innerText = '🦅 ' + text;
-                t2.innerText = '🦅 ' + text;
-                track.style.fontSize = fontSize + 'px';
-                track.style.color = color;
-                track.style.animationDuration = speed + 's';
             }
         }
-
-        document.addEventListener('input', function(e) {
-            if(e.target.id === 'news-text-admin') previewNewsBar();
-        });
 
         // ===== [WASSAYNI-SETTINGS-JS] دوال إعدادات خدمة وصيني =====
         async function loadWassayniSettings() {
@@ -6267,10 +6173,7 @@
 
         async function updateNews() {
             const text = document.getElementById('news-text-admin').value;
-            const fontSize = parseInt(document.getElementById('news-font-size').value) || 14;
-            const speed = parseInt(document.getElementById('news-speed').value) || 20;
-            const color = document.getElementById('news-color').value || '#d4af37';
-            const { error } = await _client.from('app_config').upsert({ id: 1, news_text: text, news_font_size: fontSize, news_speed: speed, news_color: color });
+            const { error } = await _client.from('app_config').upsert({ id: 1, news_text: text });
             if(!error) {
                 await addSystemLog(`تحديث شريط أخبار التطبيق: ${text}`);
                 showNotify("تم إرسال الخبر إلى تطبيق العميل بنجاح 🦅");
@@ -10489,6 +10392,5 @@ ALTER TABLE public.pharmacies  ADD COLUMN IF NOT EXISTS pickup_lng double precis
 ALTER TABLE public.sh_public_orders ADD COLUMN IF NOT EXISTS pickup_lat double precision DEFAULT NULL;
 ALTER TABLE public.sh_public_orders ADD COLUMN IF NOT EXISTS pickup_lng double precision DEFAULT NULL;
      ═══════════════════════════════════════════════════════════════════════ -->
-
-
-</body></html>
+</body>
+</html>
