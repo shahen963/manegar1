@@ -18,6 +18,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
     <style>
         :root {
@@ -378,7 +379,48 @@
             display: none;
         }
         /* ===== نهاية Full Screen Mode ===== */
-</style>
+
+        /* ══════════════════════════════════════════════════════
+           LINK PAGES SYSTEM — CSS
+           ══════════════════════════════════════════════════════ */
+        .lp-card { background:var(--glass); border:1px solid rgba(212,175,55,0.35); border-radius:16px; padding:18px; transition:.3s; }
+        .lp-card:hover { border-color:var(--gold); box-shadow:0 0 20px rgba(212,175,55,0.2); transform:translateY(-3px); }
+        .lp-badge-on  { background:rgba(46,204,113,.15); color:#2ecc71; border:1px solid #2ecc71; padding:2px 10px; border-radius:20px; font-size:10px; font-weight:bold; }
+        .lp-badge-off { background:rgba(231,76,60,.15);  color:#e74c3c; border:1px solid #e74c3c; padding:2px 10px; border-radius:20px; font-size:10px; font-weight:bold; }
+        .link-row { display:grid; grid-template-columns:48px 1fr 1fr 36px; gap:8px; align-items:center; background:rgba(0,0,0,.35); border:1px solid rgba(255,255,255,.07); border-radius:10px; padding:10px; margin-bottom:8px; }
+        .link-row select, .link-row input { background:#000; border:1px solid rgba(255,255,255,.1); color:#fff; padding:7px 10px; border-radius:8px; font-size:12px; width:100%; }
+        .link-row select { padding:7px 6px; }
+        /* Internal Orders */
+        .io-card  { background:var(--glass); border:1px solid rgba(52,152,219,.3); border-radius:14px; padding:16px; margin-bottom:12px; transition:.3s; }
+        .io-card:hover { border-color:#3498db; }
+        .io-s { padding:3px 12px; border-radius:20px; font-size:11px; font-weight:bold; display:inline-block; }
+        .io-new  { background:rgba(52,152,219,.2); color:#3498db; border:1px solid #3498db; }
+        .io-sent { background:rgba(212,175,55,.2); color:var(--gold); border:1px solid var(--gold); }
+        .io-acc  { background:rgba(155,89,182,.2); color:#9b59b6; border:1px solid #9b59b6; }
+        .io-del  { background:rgba(46,204,113,.2); color:#2ecc71; border:1px solid #2ecc71; }
+        .io-done { background:rgba(39,174,96,.2);  color:#27ae60; border:1px solid #27ae60; }
+        .drv-avail { display:flex; align-items:center; gap:12px; background:rgba(46,204,113,.06); border:1px solid rgba(46,204,113,.3); border-radius:12px; padding:12px; margin-bottom:8px; cursor:pointer; transition:.3s; }
+        .drv-avail:hover { border-color:#2ecc71; background:rgba(46,204,113,.12); }
+        .drv-avail.picked { border-color:var(--gold) !important; background:rgba(212,175,55,.1) !important; box-shadow:0 0 10px rgba(212,175,55,.3); }
+        .drv-dot { width:10px; height:10px; border-radius:50%; background:#2ecc71; box-shadow:0 0 8px #2ecc71; flex-shrink:0; animation:pulse 2s infinite; }
+        /* Equipment */
+        .eq-section { background:rgba(52,152,219,.06); border:1px solid rgba(52,152,219,.35); border-radius:14px; padding:16px; margin:12px 0; }
+        .eq-section h4 { color:#3498db; margin:0 0 12px; font-size:14px; display:flex; align-items:center; gap:8px; }
+        .eq-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+        .eq-item { background:rgba(0,0,0,.25); border-radius:10px; padding:10px; }
+        .eq-item label { font-size:10px; color:#aaa; display:block; margin-bottom:4px; }
+        .eq-item input, .eq-item select { width:100%; background:#000; border:1px solid rgba(52,152,219,.4); color:#fff; padding:7px 10px; border-radius:8px; font-size:12px; }
+        @media print { .no-print { display:none !important; } }
+        /* Contract */
+        .ctr-doc { background:#fff; color:#000; direction:rtl; font-family:'Segoe UI',sans-serif; border-radius:8px; padding:28px; font-size:12px; line-height:1.9; }
+        .ctr-hdr { text-align:center; border-bottom:2px solid #d4af37; padding-bottom:12px; margin-bottom:16px; }
+        .ctr-clause { margin:6px 0; padding:5px 12px; border-right:3px solid #e0e0e0; }
+        .ctr-clause b { color:#1d051d; }
+        .ctr-equip { background:#fff8e1; border:2px solid #d4af37; border-radius:8px; padding:12px; margin:14px 0; }
+        .ctr-sigs  { display:grid; grid-template-columns:1fr 1fr; gap:30px; margin-top:25px; border-top:1px solid #ccc; padding-top:18px; text-align:center; }
+        .ctr-line  { border-bottom:1px dashed #aaa; height:35px; margin-bottom:6px; }
+
+        </style>
 </head>
 <body>
 
@@ -476,7 +518,14 @@
             <i class="fas fa-charging-station"></i> نقاط الشحن والشركاء
         </div>
         <div class="nav-link" data-perm="system-staff-view" onclick="switchView('system-staff-view')" style="color:var(--gold);"><i class="fas fa-user-shield"></i> إدارة النظام</div>
-        <div class="nav-link" onclick="processLogout()" style="margin-top:auto; color:var(--danger); border-top: 1px solid var(--glass);"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</div>
+        <div class="nav-link" data-perm="lp-admin-view" onclick="switchView('lp-admin-view')" style="background:rgba(142,68,173,.1);border-top:2px solid #8e44ad;color:#c39bd3;font-weight:bold;">
+            <i class="fas fa-qrcode"></i> صفحات الروابط QR
+        </div>
+        <div class="nav-link" data-perm="io-admin-view" onclick="switchView('io-admin-view')" style="background:rgba(52,152,219,.1);border-top:2px solid #3498db;color:#5dade2;font-weight:bold;">
+            <i class="fas fa-hand-point-up"></i> أطلب من الإدارة
+            <span id="badge-io" class="nav-badge" style="display:none;">0</span>
+        </div>
+                <div class="nav-link" onclick="processLogout()" style="margin-top:auto; color:var(--danger); border-top: 1px solid var(--glass);"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</div>
     </div>
 
     <div class="main-content" id="main-content-area">
@@ -1603,7 +1652,288 @@
 
     </div>
 
-    <!-- ===== مودال: إعادة ضبط النظام الكامل ===== -->
+
+        <!-- ╔══════════════════════════════════════════════════════╗
+             ║  صفحات الروابط الديناميكية — متصلة بـ shaheen-links  ║
+             ╚══════════════════════════════════════════════════════╝ -->
+        <div id="lp-admin-view" class="view-section">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:12px;">
+                <div>
+                    <h2 style="color:#c39bd3;margin:0;display:flex;align-items:center;gap:10px;"><i class="fas fa-qrcode"></i> إدارة صفحة الروابط</h2>
+                    <p style="color:#aaa;font-size:12px;margin:4px 0 0;">التحكم الكامل في <b style="color:#c39bd3;">shaheen-links.html</b> — ما تحفظه هنا يظهر على الصفحة فوراً</p>
+                </div>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                    <button onclick="lpOpenPublicPage()" style="background:rgba(142,68,173,.2);border:1px solid #8e44ad;color:#c39bd3;padding:9px 16px;border-radius:10px;cursor:pointer;font-size:12px;display:flex;align-items:center;gap:6px;"><i class="fas fa-external-link-alt"></i> فتح الصفحة</button>
+                    <button onclick="lpLoad()" style="background:var(--glass);border:1px solid #c39bd3;color:#c39bd3;padding:9px 14px;border-radius:10px;cursor:pointer;font-size:12px;"><i class="fas fa-sync-alt"></i> تحديث</button>
+                </div>
+            </div>
+
+            <!-- ═══ Tab: الصفحة الرئيسية / قائمة الصفحات ═══ -->
+            <div style="display:flex;gap:8px;margin-bottom:16px;border-bottom:1px solid var(--glass);padding-bottom:10px;">
+                <button id="lp-tab-main" onclick="lpSwitchTab('main')" style="background:var(--gold);color:#000;border:none;padding:8px 18px;border-radius:8px;font-weight:bold;font-size:12px;cursor:pointer;">⭐ تعديل الصفحة الرئيسية</button>
+                <button id="lp-tab-list" onclick="lpSwitchTab('list')" style="background:var(--glass);border:1px solid var(--gold);color:var(--gold);padding:8px 18px;border-radius:8px;font-size:12px;cursor:pointer;">📋 قائمة الصفحات</button>
+            </div>
+
+            <!-- TAB: الصفحة الرئيسية (shaheen-links.html) -->
+            <div id="lp-tab-main-content">
+                <!-- إعدادات الصفحة -->
+                <div style="background:var(--glass);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:14px;">
+                    <h4 style="color:var(--gold);margin:0 0 14px;font-size:13px;"><i class="fas fa-palette"></i> إعدادات صفحة شاهين الرئيسية</h4>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+                        <div class="form-group" style="margin:0;"><label>اسم الشركة / العنوان</label><input type="text" id="lpm-title" class="" placeholder="شاهين إكسبريس" style="width:100%;background:var(--p-dark);border:1px solid rgba(212,175,55,.3);color:#fff;padding:9px 12px;border-radius:8px;font-size:13px;"></div>
+                        <div class="form-group" style="margin:0;"><label>النص التعريفي</label><input type="text" id="lpm-sub" placeholder="🦅 أسرع توصيل في المنطقة" style="width:100%;background:var(--p-dark);border:1px solid rgba(212,175,55,.3);color:#fff;padding:9px 12px;border-radius:8px;font-size:13px;"></div>
+                    </div>
+                    <div class="form-group" style="margin:0 0 12px;"><label>رابط الشعار (URL)</label><input type="text" id="lpm-logo" placeholder="https://..." style="width:100%;background:var(--p-dark);border:1px solid rgba(212,175,55,.3);color:#fff;padding:9px 12px;border-radius:8px;font-size:13px;"></div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;">
+                        <div><label style="font-size:11px;color:#aaa;display:block;margin-bottom:4px;">اللون الأول</label><input type="color" id="lpm-bg1" value="#3b0764" style="width:100%;height:38px;border-radius:8px;cursor:pointer;border:1px solid rgba(255,255,255,.15);"></div>
+                        <div><label style="font-size:11px;color:#aaa;display:block;margin-bottom:4px;">اللون الثاني</label><input type="color" id="lpm-bg2" value="#1d0535" style="width:100%;height:38px;border-radius:8px;cursor:pointer;border:1px solid rgba(255,255,255,.15);"></div>
+                        <div><label style="font-size:11px;color:#aaa;display:block;margin-bottom:4px;">اللون الثالث</label><input type="color" id="lpm-bg3" value="#0a0010" style="width:100%;height:38px;border-radius:8px;cursor:pointer;border:1px solid rgba(255,255,255,.15);"></div>
+                    </div>
+                </div>
+
+                <!-- إدارة الروابط -->
+                <div style="background:var(--glass);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:14px;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+                        <h4 style="color:var(--gold);margin:0;font-size:13px;"><i class="fas fa-link"></i> روابط الصفحة (أضف أو احذف)</h4>
+                        <button onclick="lpmAddRow()" style="background:rgba(46,204,113,.2);border:1px solid #2ecc71;color:#2ecc71;padding:6px 14px;border-radius:8px;font-size:12px;cursor:pointer;"><i class="fas fa-plus"></i> رابط جديد</button>
+                    </div>
+                    <div style="display:grid;grid-template-columns:110px 1fr 1fr 36px;gap:6px;margin-bottom:6px;padding:0 2px;">
+                        <span style="font-size:10px;color:#666;">المنصة</span>
+                        <span style="font-size:10px;color:#666;">نص الزر</span>
+                        <span style="font-size:10px;color:#666;">الرابط</span>
+                        <span></span>
+                    </div>
+                    <div id="lpm-rows"></div>
+                </div>
+
+                <!-- QR Code -->
+                <div style="background:var(--glass);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:14px;text-align:center;">
+                    <h4 style="color:var(--gold);margin:0 0 14px;font-size:13px;"><i class="fas fa-qrcode"></i> QR Code — يوجّه لـ shaheen-links.html</h4>
+                    <div id="lpm-qr-box" style="background:#fff;border-radius:12px;padding:14px;display:inline-block;margin-bottom:12px;"></div>
+                    <p id="lpm-qr-url" style="font-family:monospace;font-size:11px;color:rgba(212,175,55,.7);word-break:break-all;margin-bottom:12px;">https://qr.shahinapp.com/</p>
+                    <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">
+                        <button onclick="lpmDownloadQR()" class="btn btn-gold" style="padding:8px 18px;"><i class="fas fa-download"></i> تحميل QR</button>
+                        <button onclick="lpmCopyURL()" style="background:var(--glass);border:1px solid rgba(255,255,255,.2);color:#ccc;padding:8px 14px;border-radius:8px;cursor:pointer;font-size:12px;"><i class="fas fa-copy"></i> نسخ الرابط</button>
+                        <button onclick="lpOpenPublicPage()" style="background:rgba(142,68,173,.2);border:1px solid #8e44ad;color:#c39bd3;padding:8px 14px;border-radius:8px;cursor:pointer;font-size:12px;"><i class="fas fa-external-link-alt"></i> معاينة</button>
+                    </div>
+                </div>
+
+                <!-- حفظ -->
+                <button onclick="lpmSave()" style="width:100%;background:linear-gradient(135deg,#8e44ad,#6c3483);border:none;color:#fff;padding:14px;border-radius:12px;font-weight:bold;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 4px 15px rgba(142,68,173,.4);">
+                    <i class="fas fa-save"></i> حفظ وتحديث الصفحة فوراً
+                </button>
+                <p style="text-align:center;font-size:11px;color:#666;margin-top:8px;"><i class="fas fa-info-circle"></i> الحفظ يحدّث localStorage — افتح shaheen-links.html في نفس المتصفح لرؤية التغييرات</p>
+            </div>
+
+            <!-- TAB: قائمة الصفحات المتعددة -->
+            <div id="lp-tab-list-content" style="display:none;">
+                <div style="display:flex;justify-content:flex-end;margin-bottom:14px;">
+                    <button onclick="lpOpenNew()" style="background:linear-gradient(135deg,#8e44ad,#6c3483);border:none;color:#fff;padding:10px 20px;border-radius:10px;font-weight:bold;cursor:pointer;font-size:13px;"><i class="fas fa-plus"></i> صفحة جديدة</button>
+                </div>
+                <div class="stats-grid" style="margin-bottom:16px;">
+                    <div class="stat-card" style="border:2px solid #8e44ad;"><i class="fas fa-layer-group" style="color:#c39bd3;"></i><h3 id="lp-total" style="color:#c39bd3;font-size:24px;">0</h3><p>إجمالي</p></div>
+                    <div class="stat-card" style="border:2px solid #2ecc71;"><i class="fas fa-check-circle" style="color:#2ecc71;"></i><h3 id="lp-active" style="color:#2ecc71;font-size:24px;">0</h3><p>مفعّلة</p></div>
+                    <div class="stat-card" style="border:2px solid #e74c3c;"><i class="fas fa-ban" style="color:#e74c3c;"></i><h3 id="lp-inactive" style="color:#e74c3c;font-size:24px;">0</h3><p>معطّلة</p></div>
+                </div>
+                <div id="lp-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;">
+                    <div style="text-align:center;grid-column:1/-1;padding:40px;color:#888;"><i class="fas fa-qrcode" style="font-size:48px;opacity:.2;display:block;margin-bottom:12px;"></i><p>لا توجد صفحات بعد</p></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ╔══════════════════════════════════════════════════════╗
+             ║  أطلب من الإدارة — الطلبات الداخلية                 ║
+             ╚══════════════════════════════════════════════════════╝ -->
+        <div id="io-admin-view" class="view-section">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
+                <div>
+                    <h2 style="color:#5dade2;margin:0;display:flex;align-items:center;gap:10px;"><i class="fas fa-hand-point-up"></i> أطلب من الإدارة</h2>
+                    <p style="color:#aaa;font-size:12px;margin:4px 0 0;">الطلب يُدخَل مباشرة في قاعدة البيانات ← يظهر للمناديب <b style="color:#2ecc71;">كطلب عادي من عميل</b> في تطبيقهم</p>
+                </div>
+                <div style="display:flex;gap:10px;">
+                    <button onclick="ioOpenNew()" style="background:linear-gradient(135deg,#1a6fa8,#1a5276);border:none;color:#fff;padding:10px 20px;border-radius:10px;font-weight:bold;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:8px;"><i class="fas fa-plus"></i> طلب جديد</button>
+                    <button onclick="ioLoad()" style="background:var(--glass);border:1px solid #5dade2;color:#5dade2;padding:10px 16px;border-radius:10px;cursor:pointer;font-size:13px;"><i class="fas fa-sync-alt"></i> تحديث</button>
+                </div>
+            </div>
+            <!-- Stats -->
+            <div class="stats-grid" style="margin-bottom:20px;">
+                <div class="stat-card" style="border:2px solid #3498db;background:rgba(52,152,219,.07);">
+                    <i class="fas fa-search" style="color:#3498db;"></i>
+                    <h3 id="io-cnt-new" style="color:#3498db;font-size:26px;">0</h3><p>بانتظار مندوب</p>
+                </div>
+                <div class="stat-card" style="border:2px solid var(--gold);">
+                    <i class="fas fa-motorcycle" style="color:var(--gold);"></i>
+                    <h3 id="io-cnt-sent" style="color:var(--gold);font-size:26px;">0</h3><p>المندوب في الطريق</p>
+                </div>
+                <div class="stat-card" style="border:2px solid #2ecc71;background:rgba(46,204,113,.06);">
+                    <i class="fas fa-check-double" style="color:#2ecc71;"></i>
+                    <h3 id="io-cnt-del" style="color:#2ecc71;font-size:26px;">0</h3><p>تم التسليم</p>
+                </div>
+                <div class="stat-card" style="border:2px solid #e74c3c;background:rgba(231,76,60,.06);">
+                    <i class="fas fa-ban" style="color:#e74c3c;"></i>
+                    <h3 id="io-cnt-done" style="color:#e74c3c;font-size:26px;">0</h3><p>ملغية</p>
+                </div>
+            </div>
+            <!-- Filter -->
+            <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;align-items:center;">
+                <select id="io-filter" onchange="ioRender()" style="background:var(--p-dark);color:#fff;border:1px solid #5dade2;padding:8px 14px;border-radius:8px;font-size:12px;">
+                    <option value="all">كل الطلبات</option>
+                    <option value="searching">🔍 بانتظار مندوب</option>
+                    <option value="accepted">🏍️ المندوب في الطريق</option>
+                    <option value="completed">✅ تم التسليم</option>
+                    <option value="cancelled">❌ الملغية</option>
+                </select>
+                <div style="flex:1;max-width:320px;position:relative;">
+                    <i class="fas fa-search" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);color:#5dade2;"></i>
+                    <input type="text" id="io-search" placeholder="بحث باسم العميل أو رقم الهاتف..." oninput="ioRender()" style="width:100%;padding:8px 36px 8px 12px;background:var(--p-dark);border:1px solid rgba(93,173,226,.4);color:#fff;border-radius:8px;font-size:12px;">
+                </div>
+            </div>
+            <!-- List -->
+            <div id="io-list">
+                <div style="text-align:center;padding:50px;color:#888;">
+                    <i class="fas fa-inbox" style="font-size:48px;display:block;margin-bottom:14px;opacity:.3;"></i>
+                    <p>لا توجد طلبات داخلية بعد — اضغط "طلب جديد"</p>
+                </div>
+            </div>
+        </div>
+
+
+    <!-- ════════════════════════════════════════════════════════════
+         MODAL: إنشاء/تعديل صفحة روابط QR
+         ════════════════════════════════════════════════════════════ -->
+    <div id="lp-edit-modal" class="modal">
+        <div class="modal-content" style="max-width:680px;">
+            <h2 style="color:var(--gold);margin-bottom:16px;"><i class="fas fa-qrcode"></i> <span id="lp-modal-title">صفحة روابط جديدة</span></h2>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;">
+                <div class="form-group" style="margin:0;">
+                    <label>اسم الصفحة (للإدارة)</label>
+                    <input type="text" id="lp-name" placeholder="مثلاً: كود جدة - مطعم الشاهين">
+                </div>
+                <div class="form-group" style="margin:0;">
+                    <label>معرّف الرابط <span style="color:#aaa;font-size:10px;">(أحرف إنجليزية وأرقام وشرطة)</span></label>
+                    <input type="text" id="lp-slug" placeholder="جدة-001 أو jeddah-001" oninput="this.value=this.value.replace(/[^a-zA-Z0-9\-]/g,'').toLowerCase()">
+                </div>
+            </div>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr 80px;gap:12px;margin-bottom:14px;">
+                <div class="form-group" style="margin:0;">
+                    <label>عنوان الصفحة / اسم الشركة</label>
+                    <input type="text" id="lp-title" value="شاهين إكسبريس" placeholder="شاهين إكسبريس">
+                </div>
+                <div class="form-group" style="margin:0;">
+                    <label>رابط الشعار (URL)</label>
+                    <input type="text" id="lp-logo" placeholder="https://..." value="https://i.postimg.cc/QxzPkmPf/Whats-App-Image-2026-04-10-at-6-22-30-PM-t7edrz.jpg">
+                </div>
+                <div class="form-group" style="margin:0;">
+                    <label>لون الخلفية</label>
+                    <input type="color" id="lp-bg" value="#3b0764" style="height:42px;cursor:pointer;width:100%;border-radius:8px;">
+                </div>
+            </div>
+
+            <!-- Buttons builder -->
+            <div style="background:rgba(212,175,55,.06);border:1px solid rgba(212,175,55,.25);border-radius:12px;padding:14px;margin-bottom:14px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+                    <h4 style="color:var(--gold);margin:0;font-size:13px;"><i class="fas fa-list"></i> أزرار الروابط</h4>
+                    <button onclick="lpAddRow()" style="background:rgba(46,204,113,.2);border:1px solid #2ecc71;color:#2ecc71;padding:6px 14px;border-radius:8px;font-size:12px;cursor:pointer;"><i class="fas fa-plus"></i> زر جديد</button>
+                </div>
+                <div style="display:grid;grid-template-columns:48px 1fr 1fr 36px;gap:6px;margin-bottom:6px;padding:0 2px;">
+                    <span style="font-size:10px;color:#888;text-align:center;">أيقونة</span>
+                    <span style="font-size:10px;color:#888;">نص الزر</span>
+                    <span style="font-size:10px;color:#888;">الرابط</span>
+                    <span></span>
+                </div>
+                <div id="lp-rows"></div>
+                <p style="font-size:10px;color:#555;margin:6px 0 0;">💡 قيم الأيقونة: whatsapp | facebook | instagram | google-play | apple | globe | download | phone</p>
+            </div>
+
+            <div style="display:flex;gap:10px;align-items:center;margin-bottom:14px;">
+                <label style="color:var(--gold);font-size:13px;white-space:nowrap;">حالة الصفحة:</label>
+                <select id="lp-status" style="background:var(--p-dark);color:#fff;border:1px solid var(--gold);padding:8px 14px;border-radius:8px;">
+                    <option value="active">✅ مفعّلة</option>
+                    <option value="inactive">⛔ معطّلة</option>
+                </select>
+                <input type="hidden" id="lp-edit-id" value="">
+            </div>
+
+            <div style="display:flex;gap:10px;">
+                <button onclick="lpSave()" style="flex:1;background:var(--gold);color:#000;border:none;padding:12px;border-radius:10px;font-weight:bold;font-size:14px;cursor:pointer;"><i class="fas fa-save"></i> حفظ الصفحة</button>
+                <button onclick="lpPreview()" style="background:rgba(142,68,173,.25);border:1px solid #8e44ad;color:#c39bd3;padding:12px 18px;border-radius:10px;cursor:pointer;font-size:13px;"><i class="fas fa-eye"></i> معاينة</button>
+                <button onclick="closeModal('lp-edit-modal')" style="background:transparent;border:1px solid #e74c3c;color:#e74c3c;padding:12px 16px;border-radius:10px;cursor:pointer;">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: عرض QR Code -->
+    <div id="lp-qr-modal" class="modal">
+        <div class="modal-content" style="max-width:420px;text-align:center;">
+            <h3 style="color:var(--gold);margin-bottom:6px;"><i class="fas fa-qrcode"></i> QR Code الصفحة</h3>
+            <p id="lp-qr-name" style="color:#aaa;font-size:12px;margin-bottom:15px;"></p>
+            <div id="lp-qr-display" style="background:#fff;border-radius:16px;padding:20px;display:inline-block;box-shadow:0 0 25px rgba(212,175,55,.35);margin-bottom:15px;"></div>
+            <p id="lp-qr-url" style="font-family:monospace;font-size:11px;color:var(--gold);background:rgba(212,175,55,.1);padding:8px 12px;border-radius:8px;margin-bottom:14px;word-break:break-all;"></p>
+            <div style="display:flex;gap:10px;justify-content:center;">
+                <button onclick="lpDownloadQR()" style="background:var(--gold);color:#000;border:none;padding:10px 22px;border-radius:10px;font-weight:bold;cursor:pointer;"><i class="fas fa-download"></i> تحميل QR</button>
+                <button onclick="lpPreviewFromQR()" style="background:rgba(142,68,173,.2);border:1px solid #8e44ad;color:#c39bd3;padding:10px 16px;border-radius:10px;cursor:pointer;"><i class="fas fa-external-link-alt"></i> فتح الصفحة</button>
+                <button onclick="closeModal('lp-qr-modal')" style="background:transparent;border:1px solid #555;color:#aaa;padding:10px 14px;border-radius:10px;cursor:pointer;">إغلاق</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: طلب داخلي جديد (Dispatch لكل المناديب الفاضيين) -->
+    <div id="io-new-modal" class="modal">
+        <div class="modal-content" style="max-width:640px;">
+            <h2 style="color:#5dade2;margin-bottom:4px;"><i class="fas fa-broadcast-tower"></i> إنشاء طلب داخلي</h2>
+            <p style="color:#aaa;font-size:12px;margin-bottom:16px;padding:8px 12px;background:rgba(46,204,113,.08);border-right:3px solid #2ecc71;border-radius:6px;"><i class="fas fa-info-circle" style="color:#2ecc71;"></i> بمجرد الإرسال يصل الطلب لجميع المناديب الفاضيين — أول من يقبله يأخذه</p>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+                <div class="form-group" style="margin:0;"><label>اسم العميل *</label><input type="text" id="io-cname" placeholder="اسم العميل الكامل"></div>
+                <div class="form-group" style="margin:0;"><label>رقم الهاتف *</label><input type="tel" id="io-cphone" placeholder="09XXXXXXXX"></div>
+            </div>
+            <div class="form-group"><label>موقع العميل / العنوان *</label><input type="text" id="io-cloc" placeholder="العنوان التفصيلي للتوصيل"></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+                <div class="form-group" style="margin:0;">
+                    <label>المطعم / المتجر</label>
+                    <select id="io-rest" style="width:100%;background:var(--p-dark);color:#fff;border:1px solid var(--gold);padding:10px;border-radius:8px;">
+                        <option value="">-- اختر المطعم --</option>
+                    </select>
+                </div>
+                <div class="form-group" style="margin:0;"><label>المبلغ الإجمالي (ل.س)</label><input type="number" id="io-amount" placeholder="0"></div>
+            </div>
+            <div class="form-group"><label>تفاصيل الطلب *</label><textarea id="io-details" rows="3" placeholder="الأصناف والكميات والتفاصيل..."></textarea></div>
+            <div class="form-group"><label>ملاحظات للمندوب</label><input type="text" id="io-notes" placeholder="ملاحظات إضافية..."></div>
+
+            <!-- Broadcast info box -->
+            <div style="background:rgba(52,152,219,.08);border:1px solid rgba(52,152,219,.35);border-radius:12px;padding:14px;margin-bottom:14px;">
+                <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+                    <div style="width:10px;height:10px;border-radius:50%;background:#2ecc71;box-shadow:0 0 8px #2ecc71;flex-shrink:0;animation:pulse 1.5s infinite;"></div>
+                    <h4 style="color:#5dade2;margin:0;font-size:13px;">الإرسال التلقائي لجميع المناديب الفاضيين</h4>
+                    <button onclick="ioPeekDrivers()" style="margin-right:auto;background:rgba(52,152,219,.2);border:1px solid #3498db;color:#5dade2;padding:5px 12px;border-radius:8px;font-size:11px;cursor:pointer;"><i class="fas fa-eye"></i> عرض الفاضيين</button>
+                </div>
+                <div id="io-peek-list" style="display:none;max-height:150px;overflow-y:auto;"></div>
+                <p style="font-size:11px;color:#888;margin:0;">🏍️ سيصل إشعار فوري لجميع المناديب النشطين — أول من يضغط "قبول" يأخذ الطلب تلقائياً</p>
+            </div>
+
+            <div style="display:flex;gap:10px;">
+                <button onclick="ioSave()" style="flex:1;background:linear-gradient(135deg,#1a6fa8,#1a5276);border:none;color:#fff;padding:13px;border-radius:10px;font-weight:bold;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;"><i class="fas fa-broadcast-tower"></i> إرسال للمناديب الفاضيين</button>
+                <button onclick="closeModal('io-new-modal')" style="background:transparent;border:1px solid #e74c3c;color:#e74c3c;padding:13px 18px;border-radius:10px;cursor:pointer;">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: عقد العمل -->
+    <div id="drv-contract-modal" class="modal">
+        <div class="modal-content" style="max-width:780px;background:#f5f5f5;padding:0;">
+            <div style="background:var(--p-main);padding:14px 20px;display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid var(--gold);" class="no-print">
+                <h3 style="color:var(--gold);margin:0;font-size:15px;"><i class="fas fa-file-contract"></i> عقد عمل مندوب شاهين إكسبريس</h3>
+                <div style="display:flex;gap:8px;">
+                    <button onclick="window.print()" style="background:var(--gold);color:#000;border:none;padding:8px 18px;border-radius:8px;font-weight:bold;cursor:pointer;font-size:13px;"><i class="fas fa-print"></i> طباعة</button>
+                    <button onclick="closeModal('drv-contract-modal')" style="background:rgba(231,76,60,.15);color:#e74c3c;border:1px solid #e74c3c;padding:8px 16px;border-radius:8px;cursor:pointer;">إغلاق</button>
+                </div>
+            </div>
+            <div id="drv-contract-body" style="max-height:82vh;overflow-y:auto;padding:20px;"></div>
+        </div>
+    </div>
+
+        <!-- ===== مودال: إعادة ضبط النظام الكامل ===== -->
     <div id="full-system-reset-modal" class="modal">
         <div class="modal-content" style="max-width:580px; border:2px solid var(--danger);">
             <h2 style="color:var(--danger); display:flex; align-items:center; gap:10px; margin-top:0;">
@@ -1879,7 +2209,43 @@
             </div>
             <h4 style="color:var(--gold)">سجل الدفعات</h4>
             <div id="driver-payment-logs" style="max-height:150px; overflow-y:auto;"></div>
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:20px;">
+            <!-- ═══ قسم المعدات والعقد ═══ -->
+            <div class="eq-section">
+                <h4><i class="fas fa-box-open"></i> المعدات المُسلَّمة</h4>
+                <div class="eq-grid">
+                    <div class="eq-item"><label><i class="fas fa-box"></i> رقم البوكس</label><input type="text" id="eq-box" placeholder="BOX-007"></div>
+                    <div class="eq-item"><label><i class="fas fa-tshirt"></i> رقم التيشيرت</label><input type="text" id="eq-shirt" placeholder="SH-023"></div>
+                    <div class="eq-item"><label><i class="fas fa-shield-alt"></i> مبلغ التأمين</label>
+                        <div style="display:flex;gap:5px;">
+                            <input type="number" id="eq-deposit" placeholder="50000" style="flex:1;">
+                            <select id="eq-currency" style="width:90px;background:#000;border:1px solid rgba(52,152,219,.4);color:#fff;padding:7px 4px;border-radius:8px;font-size:11px;">
+                                <option value="ل.س">ل.س</option>
+                                <option value="$">دولار $</option>
+                                <option value="€">يورو €</option>
+                                <option value="ر.س">ر.س</option>
+                                <option value="د.إ">د.إ</option>
+                                <option value="₺">ليرة ₺</option>
+                                <option value="دينار">دينار</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="eq-item"><label><i class="fas fa-tools"></i> حالة المعدات</label>
+                        <select id="eq-cond">
+                            <option value="good">✅ سليم</option>
+                            <option value="damaged">⚠️ تالف</option>
+                            <option value="lost">❌ مفقود</option>
+                            <option value="received">📦 مستلم</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="margin-top:8px;"><label style="font-size:10px;color:#aaa;display:block;margin-bottom:4px;">ملاحظات</label>
+                    <textarea id="eq-notes" rows="2" style="width:100%;background:#000;border:1px solid rgba(52,152,219,.4);color:#fff;padding:8px;border-radius:8px;font-size:12px;resize:vertical;" placeholder="ملاحظات عن حالة المعدات..."></textarea>
+                </div>
+                <button onclick="drvSaveEquip()" style="width:100%;margin-top:8px;background:rgba(52,152,219,.2);border:1px solid #3498db;color:#fff;padding:9px;border-radius:8px;font-weight:bold;cursor:pointer;font-size:12px;"><i class="fas fa-save"></i> حفظ بيانات المعدات</button>
+            </div>
+            <button onclick="drvOpenContract()" style="width:100%;margin-top:10px;background:linear-gradient(135deg,#8e44ad,#6c3483);border:none;color:#fff;padding:13px;border-radius:12px;font-weight:bold;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 4px 15px rgba(142,68,173,.4);"><i class="fas fa-file-contract"></i> إنشاء عقد العمل الرسمي 📄</button>
+            <!-- ═══ نهاية المعدات والعقد ═══ -->
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:14px;">
                 <button class="btn btn-gold" onclick="openDriverAlertBox()">إرسال تنبيه</button>
                 <button class="btn btn-gold" onclick="contactDriverWhatsApp()">واتساب</button>
                 <button class="btn btn-gold" id="btn-code-lock" onclick="toggleDriverCodeLock()">قفل الحساب</button>
@@ -2857,7 +3223,7 @@
         }
 
         // الأقسام المتاحة لجميع موظفي الإدارة بدون قيد صلاحية
-        const _PUBLIC_VIEWS = ['settlement-view', 'customers-view', 'active-orders-view', 'completed-archive-view', 'tracking-view', 'shift-tracking-view', 'finance-view'];
+        const _PUBLIC_VIEWS = ['settlement-view', 'customers-view', 'active-orders-view', 'completed-archive-view', 'tracking-view', 'shift-tracking-view', 'finance-view', 'lp-admin-view', 'io-admin-view'];
 
         function checkPermission(perm) {
             // أقسام عامة — متاحة لكل الموظفين
@@ -2963,6 +3329,9 @@
             if(id === 'sweets-partnership-view') loadSweetsPartnershipWithChatSupport();
             if(id === 'charge-partners-view') { loadChargePartners(); loadChargeLogsAdmin(); loadDriversToDirectChargeSelect(); }
             if(id === 'contact-settings-view') loadContactSettings();
+            // ═══ الأقسام الجديدة ═══
+            if(id === 'lp-admin-view')  { lpLoad(); setTimeout(lpmInit, 100); }
+            if(id === 'io-admin-view')  ioLoad();
         }
 
         // [FIX-ERR-A4] معالج عام للأخطاء غير المعالجة
@@ -5963,6 +6332,8 @@
                 openModal('driver-action-modal');
                 // تحميل أرباح المندوب
                 loadDriverEarnings(id);
+                // ═══ تحميل بيانات المعدات ═══
+                setTimeout(() => { if(typeof drvLoadEquip === 'function') drvLoadEquip(data); }, 200);
                 // ===== تحميل تقرير الدوام إذا كان مندوب دوام ثابت =====
                 loadAttendanceReport(id, data);
                 // ===== نهاية تقرير الدوام =====
@@ -10362,35 +10733,757 @@
         // ===== نهاية نظام المدير العام =====
         // ============================================================
     
-    // [FIX-VIS-A2] إعادة تحميل البيانات عند العودة للتبويب في لوحة الإدارة
-    document.addEventListener('visibilitychange', function() {
-        if (document.visibilityState === 'visible' && currentStaff) {
-            const activeView = document.querySelector('.view-section.active');
-            if (!activeView) return;
-            const id = activeView.id;
-            if (id === 'finance-view') loadFinanceSummary();
-            if (id === 'orders-view') loadOrdersTable();
-            if (id === 'drivers-view') loadDriversTable();
-            if (id === 'active-orders-view') loadActiveOrdersView();
-            if (id === 'completed-archive-view') loadCompletedArchive();
-            if (id === 'customers-view') loadCustomersTable();
-            if (id === 'hiring-view') loadHiringRequests();
-            if (id === 'system-staff-view') { loadSystemLogs(); loadStaffList(); }
-        }
-    });
 
-</script>
-<!-- ═══════════════════════════════════════════════════════════════════════
-     FIX-LOC-ADMIN — SQL Migrations (شغّلها في Supabase SQL Editor)
-     أضف هذه الأعمدة إذا لم تكن موجودة:
-     ═══════════════════════════════════════════════════════════════════════
-ALTER TABLE public.restaurants ADD COLUMN IF NOT EXISTS pickup_lat double precision DEFAULT NULL;
-ALTER TABLE public.restaurants ADD COLUMN IF NOT EXISTS pickup_lng double precision DEFAULT NULL;
-ALTER TABLE public.restaurants ADD COLUMN IF NOT EXISTS res_address text DEFAULT NULL;
-ALTER TABLE public.pharmacies  ADD COLUMN IF NOT EXISTS pickup_lat double precision DEFAULT NULL;
-ALTER TABLE public.pharmacies  ADD COLUMN IF NOT EXISTS pickup_lng double precision DEFAULT NULL;
-ALTER TABLE public.sh_public_orders ADD COLUMN IF NOT EXISTS pickup_lat double precision DEFAULT NULL;
-ALTER TABLE public.sh_public_orders ADD COLUMN IF NOT EXISTS pickup_lng double precision DEFAULT NULL;
-     ═══════════════════════════════════════════════════════════════════════ -->
-</body>
-</html>
+
+    // ═══════════════════════════════════════════════════════════════════
+    // ████████████  تحكم صفحة الروابط (shaheen-links.html)  ██████████
+    // ═══════════════════════════════════════════════════════════════════
+
+    const SH_LP_KEY = 'sh_lp_v1'; // نفس المفتاح الذي تقرأه shaheen-links.html
+
+    const LP_PLT = {
+        whatsapp:   { icon:'fab fa-whatsapp',      label:'واتساب',             color:'#25D366' },
+        instagram:  { icon:'fab fa-instagram',     label:'إنستغرام',           color:'#E1306C' },
+        facebook:   { icon:'fab fa-facebook-f',    label:'فيسبوك',             color:'#1877F2' },
+        googleplay: { icon:'fab fa-google-play',   label:'Google Play',        color:'#01875f' },
+        appstore:   { icon:'fab fa-apple',         label:'App Store',          color:'#1c1c1e' },
+        telegram:   { icon:'fab fa-telegram',      label:'تيليجرام',           color:'#0088cc' },
+        youtube:    { icon:'fab fa-youtube',       label:'يوتيوب',             color:'#FF0000' },
+        twitter:    { icon:'fab fa-x-twitter',     label:'تويتر / X',          color:'#000000' },
+        snapchat:   { icon:'fab fa-snapchat',      label:'سناب شات',           color:'#FFFC00' },
+        tiktok:     { icon:'fab fa-tiktok',        label:'تيك توك',            color:'#010101' },
+        website:    { icon:'fas fa-globe',         label:'الموقع الرسمي',      color:'#8e44ad' },
+        download:   { icon:'fas fa-download',      label:'تحميل التطبيق',      color:'#2980b9' },
+        phone:      { icon:'fas fa-phone',         label:'اتصل بنا',           color:'#27ae60' },
+        email:      { icon:'fas fa-envelope',      label:'البريد الإلكتروني',  color:'#c0392b' },
+        location:   { icon:'fas fa-map-marker-alt',label:'موقعنا على الخريطة', color:'#e67e22' },
+        link:       { icon:'fas fa-link',          label:'رابط مخصص',          color:'#64748b' },
+    };
+
+    // ── تبديل بين تابات إدارة الروابط ──
+    function lpSwitchTab(tab) {
+        const isMain = tab === 'main';
+        document.getElementById('lp-tab-main-content').style.display = isMain ? 'block' : 'none';
+        document.getElementById('lp-tab-list-content').style.display = isMain ? 'none'  : 'block';
+        document.getElementById('lp-tab-main').style.cssText = isMain
+            ? 'background:var(--gold);color:#000;border:none;padding:8px 18px;border-radius:8px;font-weight:bold;font-size:12px;cursor:pointer;'
+            : 'background:var(--glass);border:1px solid var(--gold);color:var(--gold);padding:8px 18px;border-radius:8px;font-size:12px;cursor:pointer;';
+        document.getElementById('lp-tab-list').style.cssText = isMain
+            ? 'background:var(--glass);border:1px solid var(--gold);color:var(--gold);padding:8px 18px;border-radius:8px;font-size:12px;cursor:pointer;'
+            : 'background:var(--gold);color:#000;border:none;padding:8px 18px;border-radius:8px;font-weight:bold;font-size:12px;cursor:pointer;';
+        if (tab === 'list') lpLoad();
+        if (tab === 'main') lpmInit();
+    }
+
+    // ── تهيئة تاب الصفحة الرئيسية ──
+    function lpmInit() {
+        // قراءة البيانات الحالية من localStorage (نفس ما تقرأه shaheen-links.html)
+        let D = {
+            title: 'شاهين إكسبريس',
+            sub:   '🦅 أسرع توصيل في المنطقة',
+            logo:  'https://i.postimg.cc/QxzPkmPf/Whats-App-Image-2026-04-10-at-6-22-30-PM-t7edrz.jpg',
+            bg1: '#3b0764', bg2: '#1d0535', bg3: '#0a0010',
+            links: [
+                { type:'whatsapp',  label:'تواصل معنا عبر واتساب',  url:'https://wa.me/966XXXXXXXXX' },
+                { type:'instagram', label:'تابعنا على إنستغرام',    url:'https://instagram.com/' },
+                { type:'facebook',  label:'صفحتنا على فيسبوك',      url:'https://facebook.com/' },
+                { type:'googleplay',label:'حمّل تطبيقنا Android',   url:'https://play.google.com/store' },
+                { type:'appstore',  label:'حمّل تطبيقنا iOS',       url:'https://apps.apple.com' },
+            ]
+        };
+        try {
+            const saved = localStorage.getItem(SH_LP_KEY);
+            if (saved) D = { ...D, ...JSON.parse(saved) };
+        } catch(e) {}
+
+        // تعبئة الحقول
+        const se = (id, v) => { const el = document.getElementById(id); if (el) el.value = v||''; };
+        se('lpm-title', D.title); se('lpm-sub', D.sub); se('lpm-logo', D.logo);
+        se('lpm-bg1', D.bg1); se('lpm-bg2', D.bg2); se('lpm-bg3', D.bg3);
+
+        // تعبئة الروابط
+        const rows = document.getElementById('lpm-rows');
+        if (rows) {
+            rows.innerHTML = '';
+            (D.links || []).forEach(l => lpmAddRow(l));
+        }
+
+        // QR Code
+        lpmBuildQR();
+    }
+
+    // ── إضافة صف رابط جديد ──
+    function lpmAddRow(data) {
+        const rows = document.getElementById('lpm-rows');
+        if (!rows) return;
+        const div = document.createElement('div');
+        div.style.cssText = 'display:grid;grid-template-columns:110px 1fr 1fr 36px;gap:7px;align-items:center;background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:9px;margin-bottom:7px;';
+        const opts = Object.keys(LP_PLT).map(k =>
+            `<option value="${k}"${data&&data.type===k?' selected':''}>${LP_PLT[k].label}</option>`
+        ).join('');
+        div.innerHTML = `
+            <select style="background:#000;border:1px solid rgba(212,175,55,.3);color:#fff;padding:7px 4px;border-radius:8px;font-size:11px;width:100%;">${opts}</select>
+            <input type="text" value="${(data?.label||'').replace(/"/g,'&quot;')}" placeholder="نص الزر" style="background:#000;border:1px solid rgba(255,255,255,.1);color:#fff;padding:8px 10px;border-radius:8px;font-size:12px;width:100%;">
+            <input type="text" value="${(data?.url||'').replace(/"/g,'&quot;')}" placeholder="https://..." style="background:#000;border:1px solid rgba(255,255,255,.1);color:#fff;padding:8px 10px;border-radius:8px;font-size:11px;width:100%;">
+            <button onclick="this.parentNode.remove()" style="background:rgba(231,76,60,.2);border:1px solid rgba(231,76,60,.5);color:#e74c3c;width:36px;height:36px;border-radius:8px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">✕</button>
+        `;
+        rows.appendChild(div);
+    }
+
+    // ── جمع الروابط من الصفوف ──
+    function lpmCollectLinks() {
+        const links = [];
+        const rows = document.getElementById('lpm-rows');
+        if (!rows) return links;
+        rows.querySelectorAll('div[style]').forEach(row => {
+            const sel = row.querySelector('select');
+            const ins = row.querySelectorAll('input');
+            if (sel && ins.length >= 2 && ins[1].value.trim()) {
+                links.push({ type: sel.value, label: ins[0].value.trim(), url: ins[1].value.trim() });
+            }
+        });
+        return links;
+    }
+
+    // ── الحفظ الرئيسي — يكتب في localStorage الذي تقرأه shaheen-links.html ──
+    async function lpmSave() {
+        const ge = id => document.getElementById(id)?.value?.trim() || '';
+        const D = {
+            title: ge('lpm-title') || 'شاهين إكسبريس',
+            sub:   ge('lpm-sub')   || '🦅 أسرع توصيل في المنطقة',
+            logo:  ge('lpm-logo')  || '',
+            bg1:   document.getElementById('lpm-bg1')?.value || '#3b0764',
+            bg2:   document.getElementById('lpm-bg2')?.value || '#1d0535',
+            bg3:   document.getElementById('lpm-bg3')?.value || '#0a0010',
+            links: lpmCollectLinks()
+        };
+
+        // ── حفظ في localStorage (نفس مفتاح shaheen-links.html) ──
+        localStorage.setItem(SH_LP_KEY, JSON.stringify(D));
+
+        // ── محاولة حفظ في Supabase (لو عندنا جدول lp_pages) ──
+        let sbSaved = false;
+        try {
+            const { data: existing } = await _client.from('lp_pages').select('id').limit(1).single();
+            if (existing) {
+                await _client.from('lp_pages').update({
+                    title: D.title, logo: D.logo, sub: D.sub,
+                    bg1: D.bg1, bg2: D.bg2, bg3: D.bg3, links: D.links,
+                    updated_at: new Date().toISOString()
+                }).eq('id', existing.id);
+                sbSaved = true;
+            }
+        } catch(e) {}
+
+        await addSystemLog(`تحديث صفحة الروابط: ${D.title} | ${D.links.length} رابط${sbSaved?' | حُفظ في Supabase':''}`);
+
+        showNotify(`✅ تم الحفظ — افتح shaheen-links.html لرؤية التغييرات${sbSaved?' (Supabase ✓)':''}`);
+        lpmBuildQR();
+    }
+
+    // ── QR Code للصفحة الرئيسية (رابط الدومين الثابت) ──
+    const LPM_QR_URL = 'https://qr.shahinapp.com/';
+
+    function lpmBuildQR() {
+        const box = document.getElementById('lpm-qr-box');
+        if (!box) return;
+        const urlEl = document.getElementById('lpm-qr-url');
+        if (urlEl) urlEl.textContent = LPM_QR_URL;
+        box.innerHTML = '';
+        // branded QR with logo
+        _buildBrandedQRAdmin(box, LPM_QR_URL, 180,
+            'https://i.postimg.cc/QxzPkmPf/Whats-App-Image-2026-04-10-at-6-22-30-PM-t7edrz.jpg');
+    }
+
+    function _buildBrandedQRAdmin(container, url, size, logoUrl) {
+        const tmp = document.createElement('div');
+        tmp.style.cssText = 'position:absolute;left:-9999px;top:-9999px;';
+        document.body.appendChild(tmp);
+        let qrOk = false;
+        try {
+            if (typeof QRCode !== 'undefined') {
+                new QRCode(tmp, { text: url, width: size, height: size, colorDark:'#000', colorLight:'#fff', correctLevel: QRCode.CorrectLevel.H });
+                qrOk = true;
+            }
+        } catch(e) {}
+
+        if (!qrOk) {
+            document.body.removeChild(tmp);
+            container.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${encodeURIComponent(url)}" style="width:${size}px;height:${size}px;display:block;border-radius:8px;">`;
+            return;
+        }
+
+        setTimeout(() => {
+            const qrCanvas = tmp.querySelector('canvas');
+            if (!qrCanvas) { document.body.removeChild(tmp); return; }
+            const out = document.createElement('canvas');
+            out.width = size; out.height = size;
+            const ctx = out.getContext('2d');
+            ctx.drawImage(qrCanvas, 0, 0, size, size);
+            const lSz = Math.round(size * 0.24);
+            const cx = size/2, cy = size/2;
+            const r  = lSz/2 + 6;
+            ctx.beginPath(); ctx.arc(cx,cy,r+3,0,Math.PI*2); ctx.fillStyle='#fff'; ctx.fill();
+            ctx.beginPath(); ctx.arc(cx,cy,r+3,0,Math.PI*2); ctx.strokeStyle='#d4af37'; ctx.lineWidth=3; ctx.stroke();
+            const img = new Image();
+            img.crossOrigin = 'anonymous';
+            const finish = () => {
+                container.innerHTML = '';
+                out.style.cssText = `width:${size}px;height:${size}px;display:block;border-radius:8px;`;
+                container.appendChild(out);
+                document.body.removeChild(tmp);
+            };
+            img.onload = () => {
+                ctx.save();
+                ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2); ctx.clip();
+                ctx.drawImage(img, cx-lSz/2, cy-lSz/2, lSz, lSz);
+                ctx.restore(); finish();
+            };
+            img.onerror = () => {
+                ctx.font = `bold ${Math.round(lSz*0.55)}px sans-serif`;
+                ctx.textAlign='center'; ctx.textBaseline='middle';
+                ctx.fillStyle='#1d051d'; ctx.fillText('🦅',cx,cy); finish();
+            };
+            img.src = logoUrl;
+        }, 250);
+    }
+
+    function lpmDownloadQR() {
+        const cv  = document.querySelector('#lpm-qr-box canvas');
+        const img = document.querySelector('#lpm-qr-box img');
+        if (cv)  { const a=document.createElement('a'); a.href=cv.toDataURL('image/png'); a.download='shaheen-express-qr.png'; a.click(); showNotify('✅ تم تحميل QR المُبرمَج'); return; }
+        if (img) { const a=document.createElement('a'); a.href=img.src; a.download='shaheen-express-qr.png'; a.click(); showNotify('✅ تم تحميل QR'); return; }
+        showNotify('⚠️ انتظر انتهاء توليد QR ثم حاول');
+    }
+
+    function lpmCopyURL() {
+        const url = LPM_QR_URL;
+        navigator.clipboard?.writeText(url).then(()=>showNotify('✅ تم نسخ الرابط: ' + url)).catch(()=>showNotify('⚠️ الرابط: ' + url));
+    }
+
+    function lpOpenPublicPage() {
+        window.open(LPM_QR_URL, '_blank');
+    }
+
+    // ═══════════════════════════════════════════════════════════════════
+    // ████████████  نظام صفحات الروابط الديناميكية  ██████████████████
+    // ═══════════════════════════════════════════════════════════════════
+
+    let _lpPages = [];
+    let _lpEditId = null;
+    let _lpQrPageId = null;
+
+    const LP_ICONS = {
+        whatsapp:    { icon:'fab fa-whatsapp',    label:'واتساب',       color:'#25D366' },
+        facebook:    { icon:'fab fa-facebook',    label:'فيسبوك',       color:'#1877F2' },
+        instagram:   { icon:'fab fa-instagram',   label:'إنستغرام',     color:'#E1306C' },
+        'google-play':{ icon:'fab fa-google-play',label:'Google Play',  color:'#01875f' },
+        apple:       { icon:'fab fa-apple',       label:'App Store',    color:'#333333' },
+        globe:       { icon:'fas fa-globe',       label:'الموقع الرسمي',color:'#8e44ad' },
+        download:    { icon:'fas fa-download',    label:'تحميل',        color:'#2980b9' },
+        phone:       { icon:'fas fa-phone',       label:'اتصال مباشر',  color:'#27ae60' },
+        telegram:    { icon:'fab fa-telegram',    label:'تيليجرام',     color:'#0088cc' },
+        youtube:     { icon:'fab fa-youtube',     label:'يوتيوب',       color:'#FF0000' },
+        twitter:     { icon:'fab fa-twitter',     label:'تويتر',        color:'#1DA1F2' },
+        snapchat:    { icon:'fab fa-snapchat',    label:'سناب شات',     color:'#FFFC00' },
+        tiktok:      { icon:'fab fa-tiktok',      label:'تيك توك',      color:'#010101' },
+        link:        { icon:'fas fa-link',        label:'رابط مخصص',    color:'#7f8c8d' },
+    };
+
+    async function lpLoad() {
+        try {
+            const { data, error } = await _client.from('lp_pages').select('*').order('created_at', { ascending:false });
+            if (!error && data) _lpPages = data;
+            else _lpPages = JSON.parse(localStorage.getItem('lp_pages') || '[]');
+        } catch(e) { _lpPages = JSON.parse(localStorage.getItem('lp_pages') || '[]'); }
+        lpRender();
+    }
+
+    function lpRender() {
+        const grid = document.getElementById('lp-grid');
+        if (!grid) return;
+        const total = _lpPages.length;
+        const active = _lpPages.filter(p => p.status === 'active').length;
+        const setEl = (id,v) => { const el=document.getElementById(id); if(el) el.innerText=v; };
+        setEl('lp-total', total); setEl('lp-active', active); setEl('lp-inactive', total - active);
+        if (!total) {
+            grid.innerHTML = `<div style="text-align:center;grid-column:1/-1;padding:50px;color:#888;"><i class="fas fa-qrcode" style="font-size:56px;opacity:.2;display:block;margin-bottom:14px;"></i><p>اضغط "صفحة جديدة" لإنشاء أول صفحة روابط</p></div>`;
+            return;
+        }
+        grid.innerHTML = _lpPages.map(p => {
+            const isOn = p.status === 'active';
+            const links = p.links || [];
+            const previewBtns = links.slice(0,3).map(l => {
+                const ic = LP_ICONS[l.type] || LP_ICONS.link;
+                return `<div style="display:flex;align-items:center;gap:8px;background:${ic.color}22;border:1px solid ${ic.color}44;border-radius:8px;padding:6px 10px;margin-bottom:5px;font-size:11px;"><i class="${ic.icon}" style="color:${ic.color};width:14px;text-align:center;"></i>${l.label||ic.label}</div>`;
+            }).join('');
+            const more = links.length > 3 ? `<div style="font-size:10px;color:#888;margin-bottom:6px;">+${links.length-3} روابط أخرى</div>` : '';
+            return `<div class="lp-card">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+                    <span style="font-weight:bold;color:#fff;font-size:13px;">${p.name||'صفحة بلا اسم'}</span>
+                    <span class="${isOn?'lp-badge-on':'lp-badge-off'}">${isOn?'✅ مفعّلة':'⛔ معطّلة'}</span>
+                </div>
+                <div style="font-size:10px;color:#aaa;margin-bottom:10px;font-family:monospace;">/qr/${p.slug||p.id}</div>
+                ${previewBtns}${more}
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px;">
+                    <button onclick="lpEdit('${p.id}')" style="background:rgba(212,175,55,.2);border:1px solid var(--gold);color:var(--gold);padding:8px;border-radius:8px;font-size:11px;cursor:pointer;"><i class="fas fa-edit"></i> تعديل</button>
+                    <button onclick="lpShowQR('${p.id}')" style="background:rgba(142,68,173,.2);border:1px solid #8e44ad;color:#c39bd3;padding:8px;border-radius:8px;font-size:11px;cursor:pointer;"><i class="fas fa-qrcode"></i> QR Code</button>
+                    <button onclick="lpOpenPublic('${p.id}')" style="background:rgba(52,152,219,.2);border:1px solid #3498db;color:#5dade2;padding:8px;border-radius:8px;font-size:11px;cursor:pointer;"><i class="fas fa-external-link-alt"></i> معاينة</button>
+                    <button onclick="lpDelete('${p.id}','${(p.name||'').replace(/'/g,"\\'")}')" style="background:rgba(231,76,60,.15);border:1px solid #e74c3c;color:#e74c3c;padding:8px;border-radius:8px;font-size:11px;cursor:pointer;"><i class="fas fa-trash"></i> حذف</button>
+                </div>
+            </div>`;
+        }).join('');
+    }
+
+    function lpOpenNew() {
+        _lpEditId = null;
+        document.getElementById('lp-modal-title').innerText = 'صفحة روابط جديدة';
+        document.getElementById('lp-name').value = '';
+        document.getElementById('lp-slug').value = 'page-' + Date.now().toString(36);
+        document.getElementById('lp-title').value = 'شاهين إكسبريس';
+        document.getElementById('lp-logo').value = 'https://i.postimg.cc/QxzPkmPf/Whats-App-Image-2026-04-10-at-6-22-30-PM-t7edrz.jpg';
+        document.getElementById('lp-bg').value = '#3b0764';
+        document.getElementById('lp-status').value = 'active';
+        document.getElementById('lp-edit-id').value = '';
+        document.getElementById('lp-rows').innerHTML = '';
+        const defaults = [
+            { type:'whatsapp',  label:'تواصل معنا عبر واتساب', url:'https://wa.me/966XXXXXXXXX' },
+            { type:'instagram', label:'تابعنا على إنستغرام',   url:'https://instagram.com/shaheen' },
+            { type:'facebook',  label:'صفحتنا على فيسبوك',     url:'https://facebook.com/shaheen' },
+            { type:'globe',     label:'موقعنا الرسمي',          url:'https://shaheen.com' },
+        ];
+        defaults.forEach(d => lpAddRow(d));
+        openModal('lp-edit-modal');
+    }
+
+    function lpAddRow(data) {
+        const c = document.getElementById('lp-rows');
+        const row = document.createElement('div');
+        row.className = 'link-row';
+        const opts = Object.keys(LP_ICONS).map(k => `<option value="${k}" ${data&&data.type===k?'selected':''}>${LP_ICONS[k].label}</option>`).join('');
+        row.innerHTML = `
+            <select style="background:#000;border:1px solid rgba(212,175,55,.3);color:#fff;padding:7px 4px;border-radius:8px;font-size:11px;">${opts}</select>
+            <input type="text" value="${data?.label||''}" placeholder="نص الزر" style="background:#000;border:1px solid rgba(255,255,255,.1);color:#fff;padding:7px 10px;border-radius:8px;font-size:12px;">
+            <input type="text" value="${data?.url||''}" placeholder="الرابط https://..." style="background:#000;border:1px solid rgba(255,255,255,.1);color:#fff;padding:7px 10px;border-radius:8px;font-size:11px;">
+            <button onclick="this.closest('.link-row').remove()" style="background:rgba(231,76,60,.2);border:1px solid #e74c3c;color:#e74c3c;width:36px;height:36px;border-radius:8px;cursor:pointer;font-size:14px;flex-shrink:0;">✕</button>
+        `;
+        c.appendChild(row);
+    }
+
+    async function lpSave() {
+        const name   = document.getElementById('lp-name').value.trim();
+        const slug   = document.getElementById('lp-slug').value.trim();
+        const title  = document.getElementById('lp-title').value.trim();
+        const logo   = document.getElementById('lp-logo').value.trim();
+        const bg     = document.getElementById('lp-bg').value;
+        const status = document.getElementById('lp-status').value;
+        if (!name || !slug) { showNotify('يرجى إدخال اسم الصفحة والمعرّف'); return; }
+        const links = [];
+        document.querySelectorAll('#lp-rows .link-row').forEach(row => {
+            const [sel, inp1, inp2] = row.querySelectorAll('select, input');
+            if (inp2.value.trim()) links.push({ type: sel.value, label: inp1.value.trim(), url: inp2.value.trim() });
+        });
+        const pageData = { name, slug, title, logo, bg, status, links, updated_at: new Date().toISOString() };
+        let saved = false;
+        try {
+            if (_lpEditId) {
+                const { error } = await _client.from('lp_pages').update(pageData).eq('id', _lpEditId);
+                if (!error) saved = true;
+            } else {
+                pageData.created_at = new Date().toISOString();
+                const { error } = await _client.from('lp_pages').insert([pageData]);
+                if (!error) saved = true;
+            }
+        } catch(e) {}
+        if (!saved) {
+            let pages = JSON.parse(localStorage.getItem('lp_pages') || '[]');
+            if (_lpEditId) pages = pages.map(p => p.id === _lpEditId ? {...p,...pageData} : p);
+            else { pageData.id = 'lp_' + Date.now(); pages.unshift(pageData); }
+            localStorage.setItem('lp_pages', JSON.stringify(pages));
+        }
+        await addSystemLog(`${_lpEditId?'تعديل':'إنشاء'} صفحة روابط: ${name}`);
+        showNotify(`✅ تم ${_lpEditId?'تحديث':'إنشاء'} الصفحة — رابطها: /qr/${slug}`);
+        closeModal('lp-edit-modal');
+        lpLoad();
+    }
+
+    function lpEdit(id) {
+        const p = _lpPages.find(x => x.id == id);
+        if (!p) return;
+        _lpEditId = id;
+        document.getElementById('lp-modal-title').innerText = 'تعديل: ' + p.name;
+        document.getElementById('lp-name').value   = p.name  || '';
+        document.getElementById('lp-slug').value   = p.slug  || '';
+        document.getElementById('lp-title').value  = p.title || 'شاهين إكسبريس';
+        document.getElementById('lp-logo').value   = p.logo  || '';
+        document.getElementById('lp-bg').value     = p.bg    || '#3b0764';
+        document.getElementById('lp-status').value = p.status|| 'active';
+        document.getElementById('lp-edit-id').value = id;
+        document.getElementById('lp-rows').innerHTML = '';
+        (p.links || []).forEach(l => lpAddRow(l));
+        openModal('lp-edit-modal');
+    }
+
+    function lpShowQR(id) {
+        _lpQrPageId = id;
+        const p = _lpPages.find(x => x.id == id);
+        if (!p) return;
+        const url = window.location.origin + '/qr/' + (p.slug || p.id);
+        document.getElementById('lp-qr-name').innerText = p.name || '';
+        document.getElementById('lp-qr-url').innerText  = url;
+        const display = document.getElementById('lp-qr-display');
+        display.innerHTML = '';
+        try {
+            new QRCode(display, { text: url, width:200, height:200, colorDark:'#000', colorLight:'#fff', correctLevel: QRCode.CorrectLevel.H });
+        } catch(e) {
+            display.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(url)}" style="width:200px;height:200px;">`;
+        }
+        openModal('lp-qr-modal');
+    }
+
+    function lpDownloadQR() {
+        const img = document.querySelector('#lp-qr-display img') || document.querySelector('#lp-qr-display canvas');
+        if (!img) { showNotify('QR غير متاح للتحميل'); return; }
+        let src = img.tagName === 'CANVAS' ? img.toDataURL('image/png') : img.src;
+        const a = document.createElement('a'); a.href = src; a.download = 'shaheen-qr.png'; a.click();
+    }
+
+    function lpPreview() {
+        const name  = document.getElementById('lp-name').value  || 'صفحة شاهين';
+        const title = document.getElementById('lp-title').value || 'شاهين إكسبريس';
+        const logo  = document.getElementById('lp-logo').value;
+        const bg    = document.getElementById('lp-bg').value;
+        const links = [];
+        document.querySelectorAll('#lp-rows .link-row').forEach(row => {
+            const [sel, inp1, inp2] = row.querySelectorAll('select, input');
+            if (inp2.value.trim()) links.push({ type: sel.value, label: inp1.value.trim(), url: inp2.value.trim() });
+        });
+        lpBuildAndOpenPage({ name, title, logo, bg, links });
+    }
+
+    function lpPreviewFromQR() {
+        const p = _lpPages.find(x => x.id == _lpQrPageId);
+        if (p) lpBuildAndOpenPage(p);
+    }
+
+    function lpOpenPublic(id) {
+        const p = _lpPages.find(x => x.id == id);
+        if (p) lpBuildAndOpenPage(p);
+    }
+
+    function lpBuildAndOpenPage(p) {
+        const bg    = p.bg || '#3b0764';
+        const links = p.links || [];
+        const btnsHtml = links.map(l => {
+            const ic = LP_ICONS[l.type] || LP_ICONS.link;
+            const col = ic.color;
+            const snapTxt = l.type === 'snapchat' ? 'color:#000;' : 'color:#fff;';
+            return `<a href="${l.url||'#'}" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:14px;width:100%;padding:15px 20px;border-radius:14px;background:${col};text-decoration:none;${snapTxt}font-size:15px;font-weight:bold;margin-bottom:12px;transition:.25s;box-shadow:0 4px 18px ${col}55;" onmouseover="this.style.opacity='.85';this.style.transform='scale(1.02)'" onmouseout="this.style.opacity='1';this.style.transform='scale(1)'"><i class="${ic.icon}" style="font-size:20px;flex-shrink:0;"></i><span style="flex:1;">${l.label||ic.label}</span><i class="fas fa-chevron-left" style="font-size:12px;opacity:.6;"></i></a>`;
+        }).join('');
+        const html = `<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0"><title>${p.title||'شاهين إكسبريس'}</title><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"><style>*{box-sizing:border-box;margin:0;padding:0;}body{min-height:100vh;background:linear-gradient(160deg,${bg} 0%,#0a010a 100%);display:flex;align-items:flex-start;justify-content:center;font-family:'Segoe UI',Tahoma,sans-serif;padding:20px 16px 40px;}@media(min-width:480px){body{align-items:center;}}.wrap{width:100%;max-width:420px;}.logo{width:110px;height:110px;border-radius:50%;border:3px solid #d4af37;object-fit:cover;display:block;margin:0 auto 14px;box-shadow:0 0 28px rgba(212,175,55,.5);}.co-name{text-align:center;font-size:22px;font-weight:bold;color:#d4af37;margin-bottom:4px;text-shadow:0 0 20px rgba(212,175,55,.4);}.co-sub{text-align:center;font-size:13px;color:rgba(255,255,255,.55);margin-bottom:28px;}.links{}.footer{text-align:center;font-size:10px;color:rgba(255,255,255,.25);margin-top:20px;}</style></head><body><div class="wrap">${p.logo?`<img class="logo" src="${p.logo}" onerror="this.style.display='none'">`:'<div style="width:110px;height:110px;border-radius:50%;border:3px solid #d4af37;background:#1d051d;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;"><i class=\"fas fa-hawk\" style=\"color:#d4af37;font-size:40px;\"></i></div>'}<div class="co-name">${p.title||'شاهين إكسبريس'}</div><div class="co-sub">🦅 أسرع توصيل في المنطقة</div><div class="links">${btnsHtml}</div><div class="footer">شاهين إكسبريس © ${new Date().getFullYear()}</div></div></body></html>`;
+        const w = window.open('', '_blank'); w.document.write(html); w.document.close();
+    }
+
+    async function lpDelete(id, name) {
+        if (!confirm(`حذف صفحة "${name}"؟`)) return;
+        try { await _client.from('lp_pages').delete().eq('id', id); } catch(e) {}
+        let pages = JSON.parse(localStorage.getItem('lp_pages') || '[]');
+        localStorage.setItem('lp_pages', JSON.stringify(pages.filter(p => p.id != id)));
+        await addSystemLog(`حذف صفحة روابط: ${name}`);
+        showNotify(`🗑️ تم حذف "${name}"`);
+        lpLoad();
+    }
+
+    // ═══════════════════════════════════════════════════════════════════
+    // ████████████  نظام "أطلب من الإدارة" (الطلبات الداخلية)  ███████
+    // ═══════════════════════════════════════════════════════════════════
+
+    let _ioOrders = [];
+
+    // ═══════════════════════════════════════════════════════════════════
+    // ████████  نظام "أطلب من الإدارة" — يدخل في sh_public_orders  ████
+    // ════ الطلب يظهر للمندوب بالضبط كطلب عادي من عميل حقيقي ════════
+    // ═══════════════════════════════════════════════════════════════════
+
+    let _ioOrders = [];
+
+    // ─── تحميل طلبات الإدارة من sh_public_orders (res_type='admin_order') ───
+    async function ioLoad() {
+        try {
+            const { data, error } = await _client
+                .from('sh_public_orders')
+                .select('*')
+                .eq('res_type', 'admin_order')
+                .order('created_at', { ascending: false });
+            _ioOrders = (!error && data) ? data : JSON.parse(localStorage.getItem('io_orders') || '[]');
+        } catch(e) {
+            _ioOrders = JSON.parse(localStorage.getItem('io_orders') || '[]');
+        }
+        ioRender();
+        ioBadge();
+    }
+
+    // ─── عرض الطلبات ───
+    function ioRender() {
+        const list   = document.getElementById('io-list');
+        if (!list) return;
+        const filter = document.getElementById('io-filter')?.value || 'all';
+        const search = (document.getElementById('io-search')?.value || '').toLowerCase();
+
+        // Map filter values to sh_public_orders statuses
+        const filterMap = {
+            'new':        'searching',
+            'sent':       'searching',
+            'accepted':   'accepted',
+            'delivering': 'accepted',
+            'delivered':  'completed',
+            'cancelled':  'cancelled',
+        };
+        let rows = [..._ioOrders];
+        if (filter !== 'all') {
+            const mappedStatus = filterMap[filter] || filter;
+            rows = rows.filter(o => o.status === mappedStatus || o.status === filter);
+        }
+        if (search) rows = rows.filter(o =>
+            (o.customer_name||o.cname||'').toLowerCase().includes(search) ||
+            (o.phone||o.cphone||'').includes(search)
+        );
+
+        // Stats — count by sh_public_orders status
+        const cnt = { searching:0, accepted:0, completed:0, cancelled:0 };
+        _ioOrders.forEach(o => { if (cnt[o.status] !== undefined) cnt[o.status]++; });
+        const setEl = (id,v) => { const el=document.getElementById(id); if(el) el.innerText=v; };
+        setEl('io-cnt-new',       cnt.searching);
+        setEl('io-cnt-sent',      cnt.searching);   // same
+        setEl('io-cnt-del',       cnt.accepted);
+        setEl('io-cnt-done',      cnt.completed);
+
+        if (!rows.length) {
+            list.innerHTML = `<div style="text-align:center;padding:50px;color:#888;"><i class="fas fa-inbox" style="font-size:48px;display:block;margin-bottom:14px;opacity:.3;"></i><p>لا توجد طلبات — اضغط "طلب جديد"</p></div>`;
+            return;
+        }
+
+        // Status labels & classes mapped from sh_public_orders statuses
+        const SL = {
+            searching: 'io-new',
+            accepted:  'io-acc',
+            completed: 'io-done',
+            cancelled: 'io-sent',
+            consulting:'io-sent',
+        };
+        const ST = {
+            searching:  '🔍 بانتظار قبول مندوب',
+            accepted:   '🏍️ المندوب في الطريق',
+            completed:  '✅ تم التسليم',
+            cancelled:  '❌ ملغي',
+            consulting: '💬 استشارة',
+        };
+
+        list.innerHTML = rows.map(o => {
+            const custName  = o.customer_name || o.cname      || '—';
+            const custPhone = o.phone         || o.cphone     || '';
+            const restName  = o.restaurant_name || o.rest_name|| '—';
+            const locStr    = o.address || o.cloc || '—';
+            const drvName   = o.driver_name   || o.drv_name   || 'لم يُقبل بعد';
+            const totalAmt  = o.total         || o.amount     || 0;
+            const detailsTxt= (() => {
+                try {
+                    const items = typeof o.items === 'string' ? JSON.parse(o.items) : o.items;
+                    if (Array.isArray(items) && items.length) return items.map(i=>i.n||i.name||'').filter(Boolean).join('، ');
+                } catch(e){}
+                return o.notes || '';
+            })();
+            const statusKey = o.status || 'searching';
+            const statusBadge = `<span class="io-s ${SL[statusKey]||'io-new'}">${ST[statusKey]||statusKey}</span>`;
+            const waLink = custPhone
+                ? `<a href="https://wa.me/${custPhone.replace(/\D/g,'').replace(/^0/,'966')}" target="_blank" style="display:flex;align-items:center;gap:5px;background:rgba(37,211,102,.15);border:1px solid #25d366;color:#25d366;padding:7px 12px;border-radius:8px;font-size:11px;text-decoration:none;flex-shrink:0;"><i class="fab fa-whatsapp"></i></a>` : '';
+
+            return `<div class="io-card">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px;">
+                    <div style="display:flex;align-items:center;gap:10px;">
+                        <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#8e44ad);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">👤</div>
+                        <div>
+                            <div style="font-weight:bold;font-size:14px;">${custName}</div>
+                            <div style="font-size:11px;color:#aaa;">${custPhone}</div>
+                        </div>
+                    </div>
+                    ${statusBadge}
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:12px;color:#ccc;margin-bottom:10px;">
+                    <div><i class="fas fa-store" style="color:var(--gold);width:16px;"></i> ${restName}</div>
+                    <div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><i class="fas fa-map-marker-alt" style="color:#e74c3c;width:16px;"></i> ${locStr.substring(0,28)}${locStr.length>28?'…':''}</div>
+                    <div><i class="fas fa-motorcycle" style="color:#2ecc71;width:16px;"></i> ${drvName}</div>
+                    <div><i class="fas fa-coins" style="color:var(--gold);width:16px;"></i> ${totalAmt ? Number(totalAmt).toLocaleString()+' ل.س' : '—'}</div>
+                </div>
+                ${detailsTxt ? `<div style="font-size:11px;color:#aaa;background:rgba(0,0,0,.2);border-radius:6px;padding:6px 10px;margin-bottom:8px;">${detailsTxt.substring(0,100)}${detailsTxt.length>100?'…':''}</div>` : ''}
+                <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                    <select onchange="ioUpdateStatus('${o.id}',this.value)" style="flex:2;background:var(--p-dark);border:1px solid rgba(255,255,255,.15);color:#fff;padding:7px;border-radius:8px;font-size:11px;">
+                        <option value="${o.status}" disabled selected>تغيير الحالة ▼</option>
+                        <option value="searching">🔍 بانتظار مندوب</option>
+                        <option value="accepted">🏍️ المندوب في الطريق</option>
+                        <option value="completed">✅ تم التسليم</option>
+                        <option value="cancelled">❌ إلغاء الطلب</option>
+                    </select>
+                    ${waLink}
+                    <button onclick="ioDelete('${o.id}')" style="background:rgba(231,76,60,.15);border:1px solid #e74c3c;color:#e74c3c;padding:7px 10px;border-radius:8px;font-size:11px;cursor:pointer;flex-shrink:0;"><i class="fas fa-trash"></i></button>
+                </div>
+                <div style="font-size:10px;color:#555;margin-top:7px;display:flex;justify-content:space-between;">
+                    <span>${new Date(o.created_at||Date.now()).toLocaleString('ar-SA')}</span>
+                    <span style="color:rgba(212,175,55,.4);font-size:9px;">🆔 ${String(o.id||'').substring(0,8).toUpperCase()}</span>
+                </div>
+            </div>`;
+        }).join('');
+    }
+
+    function ioBadge() {
+        const b = document.getElementById('badge-io');
+        if (!b) return;
+        const n = _ioOrders.filter(o => o.status === 'searching').length;
+        b.innerText = n; b.style.display = n > 0 ? 'block' : 'none';
+    }
+
+    async function ioOpenNew() {
+        try {
+            const { data } = await _client.from('restaurants').select('name').eq('subscription_status','مشترك').order('name');
+            const sel = document.getElementById('io-rest');
+            if (sel && data) sel.innerHTML = '<option value="">-- اختر المطعم (اختياري) --</option>' + data.map(r=>`<option value="${r.name}">${r.name}</option>`).join('');
+        } catch(e) {}
+        ['io-cname','io-cphone','io-cloc','io-details','io-notes'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
+        const amEl = document.getElementById('io-amount'); if(amEl) amEl.value='';
+        const pl = document.getElementById('io-peek-list'); if(pl) { pl.style.display='none'; pl.innerHTML=''; }
+        openModal('io-new-modal');
+    }
+
+    async function ioPeekDrivers() {
+        const c = document.getElementById('io-peek-list');
+        c.style.display = 'block';
+        c.innerHTML = '<p style="text-align:center;color:#888;font-size:12px;padding:8px;"><i class="fas fa-spinner fa-spin"></i> جاري التحميل...</p>';
+        try {
+            const { data } = await _client.from('drivers').select('id,name,phone,avg_rating').eq('status','active').order('name');
+            if (!data || !data.length) { c.innerHTML = '<p style="text-align:center;color:#e74c3c;font-size:12px;padding:10px;">لا يوجد مناديب نشطون الآن</p>'; return; }
+            c.innerHTML = data.map(d => {
+                const rat = d.avg_rating ? '⭐'.repeat(Math.min(5,Math.round(d.avg_rating))) + ` (${Number(d.avg_rating).toFixed(1)})` : '—';
+                return `<div style="display:flex;align-items:center;gap:10px;background:rgba(46,204,113,.06);border:1px solid rgba(46,204,113,.25);border-radius:10px;padding:9px 12px;margin-bottom:6px;">
+                    <div style="width:9px;height:9px;border-radius:50%;background:#2ecc71;box-shadow:0 0 6px #2ecc71;flex-shrink:0;"></div>
+                    <div style="flex:1;font-size:12px;font-weight:bold;">${d.name}</div>
+                    <div style="font-size:11px;color:#aaa;">${d.phone}</div>
+                    <div style="font-size:11px;color:#f1c40f;">${rat}</div>
+                </div>`;
+            }).join('') + `<div style="text-align:center;font-size:11px;color:#5dade2;margin-top:6px;padding-top:6px;border-top:1px solid rgba(255,255,255,.08);"><i class="fas fa-info-circle"></i> سيرى هؤلاء (${data.length}) الطلب في تطبيقهم تلقائياً</div>`;
+        } catch(e) { c.innerHTML = '<p style="text-align:center;color:#e74c3c;font-size:12px;">خطأ في التحميل</p>'; }
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    // ioSave — يُدخل الطلب في sh_public_orders بحالة "searching"
+    // المندوب يراه في تطبيقه بالضبط كطلب عادي من عميل حقيقي
+    // ══════════════════════════════════════════════════════════════
+    async function ioSave() {
+        const cname    = (document.getElementById('io-cname')?.value   || '').trim();
+        const cphone   = (document.getElementById('io-cphone')?.value  || '').trim();
+        const cloc     = (document.getElementById('io-cloc')?.value    || '').trim();
+        const rest     =  document.getElementById('io-rest')?.value    || '';
+        const details  = (document.getElementById('io-details')?.value || '').trim();
+        const notes    = (document.getElementById('io-notes')?.value   || '').trim();
+        const amount   =  parseFloat(document.getElementById('io-amount')?.value) || 0;
+
+        if (!cname || !cphone || !cloc || !details) {
+            showNotify('⚠️ يرجى تعبئة: الاسم | الهاتف | الموقع | تفاصيل الطلب');
+            return;
+        }
+
+        // بناء items بنفس تنسيق الطلبات العادية
+        const items = [{ n: details, p: amount, qty: 1, from_admin: true }];
+        if (notes) items.push({ n: '📝 ' + notes, p: 0, qty: 0 });
+
+        // payload مطابق لتنسيق sh_public_orders تماماً
+        const orderPayload = {
+            customer_name:   cname,
+            phone:           cphone,
+            address:         cloc,          // عنوان التوصيل
+            restaurant_name: rest || 'طلب من الإدارة',
+            items:           JSON.stringify(items),
+            total:           amount,
+            delivery_price:  0,
+            status:          'searching',   // ← المندوب يراه فوراً في تطبيقه
+            res_type:        'admin_order', // ← علامة تعرّفه كطلب إداري
+            notes:           `[من الإدارة] ${notes}`.trim(),
+            created_at:      new Date().toISOString(),
+        };
+
+        let saved = false;
+        let orderId = null;
+
+        // ── إدخال في sh_public_orders (نفس جدول الطلبات الحقيقية) ──
+        try {
+            const { data: ins, error } = await _client
+                .from('sh_public_orders')
+                .insert([orderPayload])
+                .select('id');
+
+            if (!error && ins && ins[0]) {
+                saved    = true;
+                orderId  = ins[0].id;
+            } else if (error) {
+                console.warn('sh_public_orders insert error:', error.message);
+            }
+        } catch(e) {
+            console.warn('sh_public_orders exception:', e);
+        }
+
+        // ── Fallback: localStorage ──
+        if (!saved) {
+            orderId = 'io_' + Date.now();
+            const localOrders = JSON.parse(localStorage.getItem('io_orders') || '[]');
+            localOrders.unshift({ ...orderPayload, id: orderId, cname, cphone, cloc, rest_name: rest, details });
+            localStorage.setItem('io_orders', JSON.stringify(localOrders));
+        }
+
+        await addSystemLog(`طلب إداري [${String(orderId).substring(0,8).toUpperCase()}] → sh_public_orders | العميل: ${cname} | ${rest||'—'} | ${cloc.substring(0,30)}`);
+
+        showNotify(saved
+            ? `✅ تم إدخال الطلب — يظهر للمناديب الآن كطلب عادي 🚀`
+            : `⚠️ حُفظ محلياً — تحقق من جدول sh_public_orders في Supabase`
+        );
+
+        closeModal('io-new-modal');
+        ioLoad();
+    }
+
+    // ─── تحديث حالة طلب في sh_public_orders ───
+    async function ioUpdateStatus(id, newStatus) {
+        const labels = {
+            searching: '🔍 بانتظار مندوب',
+            accepted:  '🏍️ المندوب في الطريق',
+            completed: '✅ تم التسليم',
+            cancelled: '❌ ملغي',
+        };
+        try {
+            await _client.from('sh_public_orders')
+                .update({ status: newStatus })
+                .eq('id', id);
+        } catch(e) {
+            const orders = JSON.parse(localStorage.getItem('io_orders') || '[]');
+            localStorage.setItem('io_orders', JSON.stringify(orders.map(o => o.id == id ? {...o, status: newStatus} : o)));
+        }
+        showNotify(`تم التحديث → ${labels[newStatus] || newStatus}`);
+        ioLoad();
+    }
+
+    // ─── حذف طلب من sh_public_orders ───
+    async function ioDelete(id) {
+        if (!confirm('حذف هذا الطلب الإداري نهائياً؟')) return;
+        try {
+            await _client.from('sh_public_orders').delete().eq('id', id);
+        } catch(e) {
+            const orders = JSON.parse(localStorage.getItem('io_orders') || '[]');
+            localStorage.setItem('io_orders', JSON.stringify(orders.filter(o => o.id != id)));
+        }
+        await addSystemLog(`حذف طلب إداري: ${id}`);
+        showNotify('تم الحذف');
+        ioLoad();
+    }
+
+    
+        // ═══════════════════════════════════════════════════════════════════
+    // ████████████  نظام المعدات والعقد الرسمي  ██████████████████████
+    // ═══════════════════════════════════════════════════════════════════
