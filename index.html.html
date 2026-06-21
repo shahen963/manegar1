@@ -2506,9 +2506,24 @@ CREATE POLICY "allow_all_family_products" ON public.family_business_products FOR
                 <div style="font-size:11px;color:#fff;margin-top:4px;">${_criticalList.map(b=>escHtml(b.name)+' ('+famSubStatusInfo(b).daysLeft+' يوم)').join('، ')}</div>
               </div>` : '';
 
+            // [FAM-RATING] جلب تقييمات كل الأسر دفعة واحدة لعرضها بالبطاقات
+            let _famAdminRatings = {};
+            try{
+              const idsStr = list.map(b=>b.id).join(',');
+              if(idsStr){
+                const ratR = await fetch(_FAM_SBU+`/rest/v1/family_business_ratings?select=business_id,stars&business_id=in.(${idsStr})`, {headers:_FAM_H()});
+                if(ratR.ok){
+                  const ratRows = await ratR.json();
+                  (ratRows||[]).forEach(rw=>{ if(!_famAdminRatings[rw.business_id]) _famAdminRatings[rw.business_id]=[]; _famAdminRatings[rw.business_id].push(rw.stars); });
+                }
+              }
+            }catch(e){}
+
             w.innerHTML = criticalBanner + soonBanner + list.map(b => {
               const sub = famSubStatusInfo(b);
               const catIcon = _famCatIcons[b.category] || '📦';
+              const ratArr = _famAdminRatings[b.id];
+              const ratHtml = ratArr ? `⭐ ${(ratArr.reduce((a,c)=>a+c,0)/ratArr.length).toFixed(1)} (${ratArr.length})` : 'بدون تقييمات';
               return `
               <div class="fam-card">
                 <div style="position:relative;height:120px;background:#1a0510;">
@@ -2519,6 +2534,7 @@ CREATE POLICY "allow_all_family_products" ON public.family_business_products FOR
                 </div>
                 <div style="padding:12px;">
                   <b style="font-size:13px;display:block;margin-bottom:4px;">${escHtml(b.name)}</b>
+                  <div style="font-size:10px;color:#f4c430;margin-bottom:6px;">${ratHtml}</div>
                   <div style="font-size:11px;color:#888;margin-bottom:8px;min-height:28px;">${escHtml((b.description||'').slice(0,60))}</div>
                   <div style="display:flex;align-items:center;justify-content:space-between;background:${sub.bg};border-radius:7px;padding:5px 8px;margin-bottom:8px;">
                     <span style="color:${sub.color};font-size:10px;font-weight:bold;"><i class="fas fa-calendar-check"></i> ${sub.label}</span>
